@@ -352,7 +352,7 @@
         aEl.download = "".concat(fileName, ".").concat(type);
         aEl.click();
       } // Change the default setting
-      // type, lineWidth, color, arrowSize, canvasBgColor
+      // type(pencil, straightLine, rect, circle, arrow), lineWidth, color, arrowSize, canvasBgColor
 
     }, {
       key: "config",
