@@ -26,6 +26,69 @@
     return Constructor;
   }
 
+  // about arrow
+  function getArrowPoint(beginPoint, endPoint, par) {
+    var slopyAngle = Math.atan2(endPoint.y - beginPoint.y, endPoint.x - beginPoint.x);
+    var angle = 0.6;
+    var innerAngle = 0.3;
+    var innerPar = par / 3 * 2;
+    var point1 = {
+      x: endPoint.x - Math.round(par * Math.cos(slopyAngle + angle)),
+      y: endPoint.y - Math.round(par * Math.sin(slopyAngle + angle))
+    };
+    var point2 = {
+      x: endPoint.x - Math.round(par * Math.cos(slopyAngle - angle)),
+      y: endPoint.y - Math.round(par * Math.sin(slopyAngle - angle))
+    };
+    var point3 = {
+      x: endPoint.x - Math.round(innerPar * Math.cos(slopyAngle + innerAngle)),
+      y: endPoint.y - Math.round(innerPar * Math.sin(slopyAngle + innerAngle))
+    };
+    var point4 = {
+      x: endPoint.x - Math.round(innerPar * Math.cos(slopyAngle - innerAngle)),
+      y: endPoint.y - Math.round(innerPar * Math.sin(slopyAngle - innerAngle))
+    };
+    return [beginPoint, point4, point2, endPoint, point1, point3];
+  }
+  function drawArrow(ctx, options) {
+    var canvasWidth = options.canvasWidth;
+    var canvasHeight = options.canvasHeight;
+    var arrowSize = options.arrowSize;
+    ctx.save(); // ctx.globalCompositeOperation = 'source-over';
+
+    ctx.beginPath();
+    ctx.moveTo(options.points[0].x * canvasWidth, options.points[0].y * canvasHeight);
+
+    var paintArrar = function paintArrar(ctx, polygonVertex) {
+      ctx.beginPath();
+      ctx.moveTo(polygonVertex[0].x, polygonVertex[0].y);
+
+      for (var i = 1; i < polygonVertex.length; i++) {
+        ctx.lineTo(polygonVertex[i].x, polygonVertex[i].y);
+      }
+
+      ctx.closePath();
+      ctx.fill();
+    };
+
+    var drawArrow = function drawArrow(ctx, stopPoint, beginPoint, arrowSize) {
+      var polygonVertex = getArrowPoint(beginPoint, stopPoint, arrowSize);
+      paintArrar(ctx, polygonVertex);
+    };
+
+    for (var i = 1; i < options.points.length; i++) {
+      drawArrow(ctx, {
+        x: options.points[i].x * canvasWidth,
+        y: options.points[i].y * canvasHeight
+      }, {
+        x: options.points[i - 1].x * canvasWidth,
+        y: options.points[i - 1].y * canvasHeight
+      }, arrowSize);
+    }
+
+    ctx.restore();
+  }
+
   var Draw = /*#__PURE__*/function () {
     function Draw(options) {
       _classCallCheck(this, Draw);
@@ -88,8 +151,7 @@
         this.drawBackground();
         this.canvas.addEventListener("mousedown", function (event) {
           _this.isDrawing = true;
-          _this.image.src = _this.canvas.toDataURL("image/png"); //将当前的图片转化为base64
-
+          _this.image.src = _this.canvas.toDataURL("image/png");
           var clientX = event.clientX,
               clientY = event.clientY; // 鼠标按下时, canvas的初始坐标
 
@@ -260,87 +322,17 @@
               x: x / _this2.canvasWidth,
               y: y / _this2.canvasHeight
             };
-
-            _this2.drawArrow(_this2.context, {
-              points: _this2.arrowPoints
+            drawArrow(_this2.context, {
+              points: _this2.arrowPoints,
+              arrowSize: _this2.arrowSize,
+              canvasWidth: _this2.canvasWidth,
+              canvasHeight: _this2.canvasHeight
             });
           },
           clear: function clear() {
             return _this2.clear();
           }
         };
-      } // 箭头
-
-    }, {
-      key: "getArrowPoint",
-      value: function getArrowPoint(beginPoint, endPoint, par) {
-        var slopyAngle = Math.atan2(endPoint.y - beginPoint.y, endPoint.x - beginPoint.x);
-        var arrowLength = Math.sqrt(Math.pow(endPoint.y - beginPoint.y, 2) + Math.pow(endPoint.x - beginPoint.x, 2));
-        var angle = 0.6;
-        var innerAngle = 0.3;
-        var innerPar = par / 3 * 2;
-        var point1 = {
-          x: endPoint.x - Math.round(par * Math.cos(slopyAngle + angle)),
-          y: endPoint.y - Math.round(par * Math.sin(slopyAngle + angle))
-        };
-        var point2 = {
-          x: endPoint.x - Math.round(par * Math.cos(slopyAngle - angle)),
-          y: endPoint.y - Math.round(par * Math.sin(slopyAngle - angle))
-        };
-        var point3 = {
-          x: endPoint.x - Math.round(innerPar * Math.cos(slopyAngle + innerAngle)),
-          y: endPoint.y - Math.round(innerPar * Math.sin(slopyAngle + innerAngle))
-        };
-        var point4 = {
-          x: endPoint.x - Math.round(innerPar * Math.cos(slopyAngle - innerAngle)),
-          y: endPoint.y - Math.round(innerPar * Math.sin(slopyAngle - innerAngle))
-        };
-        return [beginPoint, point4, point2, endPoint, point1, point3];
-      }
-    }, {
-      key: "drawArrow",
-      value: function drawArrow(ctx, options) {
-        var _this3 = this;
-
-        var canvasWidth = this.canvasWidth;
-        var canvasHeight = this.canvasHeight;
-        var arrowSize = 15;
-        ctx.save(); // ctx.globalCompositeOperation = 'source-over';
-
-        ctx.beginPath();
-        ctx.moveTo(options.points[0].x * canvasWidth, options.points[0].y * canvasHeight);
-
-        var paintArrar = function paintArrar(ctx, polygonVertex) {
-          var canvasWidth = ctx.canvas.width,
-              canvasHeight = ctx.canvas.height;
-          ctx.beginPath();
-          ctx.moveTo(polygonVertex[0].x, polygonVertex[0].y);
-
-          for (var i = 1; i < polygonVertex.length; i++) {
-            ctx.lineTo(polygonVertex[i].x, polygonVertex[i].y);
-          }
-
-          ctx.closePath();
-          ctx.fill();
-        };
-
-        var drawArrow = function drawArrow(ctx, stopPoint, beginPoint, arrowSize) {
-          var polygonVertex = _this3.getArrowPoint(beginPoint, stopPoint, arrowSize);
-
-          paintArrar(ctx, polygonVertex);
-        };
-
-        for (var i = 1; i < options.points.length; i++) {
-          drawArrow(ctx, {
-            x: options.points[i].x * canvasWidth,
-            y: options.points[i].y * canvasHeight
-          }, {
-            x: options.points[i - 1].x * canvasWidth,
-            y: options.points[i - 1].y * canvasHeight
-          }, arrowSize);
-        }
-
-        ctx.restore();
       }
     }, {
       key: "exportBase64",

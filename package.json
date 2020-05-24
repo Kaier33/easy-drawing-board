@@ -1,7 +1,7 @@
 {
   "name": "easy-drawing-board",
   "version": "0.1.0",
-  "description": "a simple canvas-drawing lib",
+  "description": "a easy to use canvas-drawing lib 🎨",
   "main": "./dist/easy-drawing-board.js",
   "scripts": {
     "build": "rollup -c"

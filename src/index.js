@@ -1,3 +1,4 @@
+import { drawArrow } from './utils/index';
 class Draw {
   constructor(options) {
     const {
@@ -48,7 +49,7 @@ class Draw {
 
     this.canvas.addEventListener("mousedown", (event) => {
       this.isDrawing = true;
-      this.image.src = this.canvas.toDataURL("image/png"); //将当前的图片转化为base64
+      this.image.src = this.canvas.toDataURL("image/png");
       const { clientX, clientY } = event;
       // 鼠标按下时, canvas的初始坐标
       originX = clientX - c_offsetLeft;
@@ -188,91 +189,15 @@ class Draw {
           x: x / this.canvasWidth,
           y: y / this.canvasHeight,
         };
-        this.drawArrow(this.context, {
+        drawArrow(this.context, {
           points: this.arrowPoints,
+          arrowSize: this.arrowSize,
+          canvasWidth: this.canvasWidth,
+          canvasHeight: this.canvasHeight
         });
       },
       clear: () => this.clear(),
     };
-  }
-
-  // 箭头
-  getArrowPoint(beginPoint, endPoint, par) {
-    const slopyAngle = Math.atan2(
-      endPoint.y - beginPoint.y,
-      endPoint.x - beginPoint.x
-    );
-    const arrowLength = Math.sqrt(
-      Math.pow(endPoint.y - beginPoint.y, 2) +
-        Math.pow(endPoint.x - beginPoint.x, 2)
-    );
-    const angle = 0.6;
-    const innerAngle = 0.3;
-    const innerPar = (par / 3) * 2;
-    const point1 = {
-      x: endPoint.x - Math.round(par * Math.cos(slopyAngle + angle)),
-      y: endPoint.y - Math.round(par * Math.sin(slopyAngle + angle)),
-    };
-    const point2 = {
-      x: endPoint.x - Math.round(par * Math.cos(slopyAngle - angle)),
-      y: endPoint.y - Math.round(par * Math.sin(slopyAngle - angle)),
-    };
-    const point3 = {
-      x: endPoint.x - Math.round(innerPar * Math.cos(slopyAngle + innerAngle)),
-      y: endPoint.y - Math.round(innerPar * Math.sin(slopyAngle + innerAngle)),
-    };
-    const point4 = {
-      x: endPoint.x - Math.round(innerPar * Math.cos(slopyAngle - innerAngle)),
-      y: endPoint.y - Math.round(innerPar * Math.sin(slopyAngle - innerAngle)),
-    };
-    return [beginPoint, point4, point2, endPoint, point1, point3];
-  }
-
-  drawArrow(ctx, options) {
-    const canvasWidth = this.canvasWidth;
-    const canvasHeight = this.canvasHeight;
-    const arrowSize = 15;
-    ctx.save();
-    // ctx.globalCompositeOperation = 'source-over';
-    ctx.beginPath();
-    ctx.moveTo(
-      options.points[0].x * canvasWidth,
-      options.points[0].y * canvasHeight
-    );
-    const paintArrar = (ctx, polygonVertex) => {
-      const canvasWidth = ctx.canvas.width,
-        canvasHeight = ctx.canvas.height;
-      ctx.beginPath();
-      ctx.moveTo(polygonVertex[0].x, polygonVertex[0].y);
-      for (let i = 1; i < polygonVertex.length; i++) {
-        ctx.lineTo(polygonVertex[i].x, polygonVertex[i].y);
-      }
-      ctx.closePath();
-      ctx.fill();
-    };
-    const drawArrow = (ctx, stopPoint, beginPoint, arrowSize) => {
-      const polygonVertex = this.getArrowPoint(
-        beginPoint,
-        stopPoint,
-        arrowSize
-      );
-      paintArrar(ctx, polygonVertex);
-    };
-    for (let i = 1; i < options.points.length; i++) {
-      drawArrow(
-        ctx,
-        {
-          x: options.points[i].x * canvasWidth,
-          y: options.points[i].y * canvasHeight,
-        },
-        {
-          x: options.points[i - 1].x * canvasWidth,
-          y: options.points[i - 1].y * canvasHeight,
-        },
-        arrowSize
-      );
-    }
-    ctx.restore();
   }
 
   exportBase64(type = "png") {
@@ -287,7 +212,7 @@ class Draw {
   }
 
   // Change the default setting
-  // type, lineWidth, color, arrowSize, canvasBgColor
+  // type(pencil, straightLine, rect, circle, arrow), lineWidth, color, arrowSize, canvasBgColor
   config(type, value) {
     this[type] = value;
     type === "canvasBgColor" && this.clear();
