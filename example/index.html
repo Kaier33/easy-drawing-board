@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      body {
+        padding: 0 10px;
+      }
+      .btn {
+        outline-style: none;
+        margin: 10px;
+        color: #fff;
+        padding: 10px 20px;
+        height: 40px;
+        font-size: 20px;
+        line-height: 20px;
+        text-align: center;
+        border-radius: 10px;
+        background-color: skyblue;
+      }
+      .container,.container2{
+        display: inline-block;
+        position: relative;
+        top: 0;
+        border: 5px solid #eee;
+        width: 600px;
+        height: 600px;
+      }
+      .currLineWeight {
+        display: inline-block;
+        min-width: 40px !important;
+      }
+    </style>
+    <script src="../dist/easy-drawing-board.min.js"></script>
+  </head>
+  <body>
+    <div id="operations">
+      <!-- id 关联到事件绑定 -->
+      <button class="btn" id="clear">clear</button>
+      <button class="btn" id="pencil">铅笔</button>
+      <button class="btn" id="straightLine">直线</button>
+      <button class="btn" id="rect">矩形</button>
+      <button class="btn" id="circle">圆形</button>
+      <button class="btn" id="arrow">箭头</button>
+    </div>
+    <div>
+      <label>颜色 <input onchange="colorChange(event)" id="color" type="color" value="#f00f00"></label>
+      &nbsp;&nbsp;&nbsp;
+      <label>线条粗细: <i class="currLineWeight">1</i><input id="lineWeight" type="range" onchange="rangeChange(event)" min="1" max="50" value="1"></label>
+      <button class="btn" onclick="exportBase64()">export base64 data</button>
+      <button class="btn" onclick="saveImg()">save</button>
+    </div>
+    <br />
+    <div class="container"></div>
+  </body>
+  <script>
+    let draw = null;
+    function rangeChange(e) {
+      let dom = document.getElementsByClassName('currLineWeight')[0];
+      dom.innerHTML = e.target.value
+      draw && draw.config('lineWidth', e.target.value)
+    }
+    function colorChange(e) {
+      let dom = document.getElementById('color');
+      draw && draw.config('lineColor', e.target.value)
+    }
+
+    function exportBase64() {
+      draw && console.log(draw.exportBase64())
+    }
+
+    function saveImg() {
+      draw && draw.saveImg()
+    }
+
+    window.onload = function () {
+      const container = document.getElementsByClassName('container')[0];
+      const operations = document.getElementById('operations');
+      operations.addEventListener('click', function(e) {
+        let event = e.target.id
+        if (event === 'clear') {
+          draw.clear()
+        } else {
+          draw.config('type', event)
+        }
+      })
+      const options = {
+        container,
+        // bgImg: 'http://image.kaier33.top/ori.jpg'
+      };
+      draw = new EasyDrawingBoard(options);
+      draw.init()
+    };
+  </script>
+  
+</html>
