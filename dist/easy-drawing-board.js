@@ -342,14 +342,14 @@
       }
     }, {
       key: "saveImg",
-      value: function saveImg(_ref) {
-        var _ref$type = _ref.type,
-            type = _ref$type === void 0 ? "png" : _ref$type,
-            _ref$fileName = _ref.fileName,
-            fileName = _ref$fileName === void 0 ? "canvas_image" : _ref$fileName;
-        var aEl = document.createElement("a");
-        aEl.href = this.canvas.toDataURL("image/".concat(type));
-        aEl.download = "".concat(fileName, ".").concat(type);
+      value: function saveImg() {
+        var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+          type: 'png',
+          fileName: 'canvas_image'
+        };
+        var aEl = document.createElement('a');
+        aEl.href = this.canvas.toDataURL("image/".concat(options.type));
+        aEl.download = "".concat(options.fileName, ".").concat(options.type);
         aEl.click();
       } // Change the default setting
       // type(pencil, straightLine, rect, circle, arrow), lineWidth, color, arrowSize, canvasBgColor

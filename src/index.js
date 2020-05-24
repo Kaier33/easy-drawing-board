@@ -204,10 +204,10 @@ class Draw {
     return this.canvas.toDataURL(`image/${type}`);
   }
 
-  saveImg({ type = "png", fileName = "canvas_image" }) {
-    const aEl = document.createElement("a");
-    aEl.href = this.canvas.toDataURL(`image/${type}`);
-    aEl.download = `${fileName}.${type}`;
+  saveImg(options = {type: 'png', fileName: 'canvas_image'}) {
+    const aEl = document.createElement('a');
+    aEl.href = this.canvas.toDataURL(`image/${options.type}`);
+    aEl.download = `${options.fileName}.${options.type}`;
     aEl.click();
   }
 
