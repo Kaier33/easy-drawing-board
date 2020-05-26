@@ -104,11 +104,7 @@
           arrowSize = _options$arrowSize === void 0 ? 15 : _options$arrowSize,
           _options$canvasBgColo = options.canvasBgColor,
           canvasBgColor = _options$canvasBgColo === void 0 ? "#fff" : _options$canvasBgColo;
-
-      if (!container) {
-        throw Error("No container element were found...");
-      }
-
+      if (!container) throw Error("No container element were found...");
       this.canvas = this.createCanvasEl(container);
       this.context = this.canvas.getContext("2d");
       this.type = "pencil";
@@ -122,6 +118,11 @@
       this.isDrawing = false;
       this.image = new Image();
       this.bgImg = bgImg;
+      this.textareaEl = null; // textArea元素
+
+      this.measureEl = null; // pre元素
+
+      this.textMeasure();
     }
 
     _createClass(Draw, [{
@@ -157,6 +158,8 @@
 
           originX = clientX - c_offsetLeft;
           originY = clientY - c_offsetTop;
+          var ft_originX = originX;
+          var ft_originY = originY;
 
           if (_this.type === "arrow") {
             _this.arrowPoints = [];
@@ -173,7 +176,53 @@
           _this.context.strokeStyle = _this.lineColor;
           _this.context.fillStyle = _this.lineColor;
 
-          _this.context.beginPath();
+          _this.context.beginPath(); // text start
+
+
+          if (_this.type === 'text') {
+            _this.type = null;
+            var boxDom = document.createElement('div');
+            boxDom.classList.add('text-component');
+            boxDom.style.left = "".concat(originX, "px");
+            boxDom.style.top = "".concat(originY, "px");
+            _this.boxDom = boxDom;
+            var textareaEl = document.createElement('textarea');
+            _this.textareaEl = textareaEl; // console.log(this.textareaEl)
+
+            textareaEl.style.width = '100%';
+            textareaEl.style.height = '100%';
+            textareaEl.style.color = _this.lineColor;
+            textareaEl.style.fontSize = '16px';
+            textareaEl.style.lineHeight = '20px';
+            textareaEl.placeholder = '请点击输入';
+            textareaEl.setAttribute('autofocus', true);
+
+            _this.boxDom.appendChild(textareaEl);
+
+            _this.container.appendChild(_this.boxDom);
+
+            textareaEl.onblur = function () {
+              _this.type = null;
+              textareaEl.removeAttribute('autofocus');
+
+              _this.text(_this.context, {
+                text: textareaEl.value,
+                position: {
+                  x: ft_originX,
+                  y: ft_originY
+                }
+              });
+
+              _this.container.removeChild(boxDom);
+            };
+
+            textareaEl.addEventListener('input', function (e) {
+              _this.measureEl.innerHTML = e.target.value + ' ';
+              _this.textareaEl.style.width = _this.measureEl.clientWidth + 'px';
+              _this.textareaEl.style.height = _this.measureEl.clientHeight + 'px';
+            });
+          } // text end
+
         });
         this.canvas.addEventListener("mousemove", function (event) {
           if (_this.isDrawing) {
@@ -359,6 +408,37 @@
       value: function config(type, value) {
         this[type] = value;
         type === "canvasBgColor" && this.clear();
+      }
+    }, {
+      key: "textMeasure",
+      value: function textMeasure() {
+        var preDom = document.createElement('pre');
+        preDom.classList.add('sketch-temp');
+        preDom.classList.add('text-pre');
+        preDom.style.fontSize = '16px';
+        preDom.style.lineHeight = '20px';
+        this.measureEl = preDom;
+        this.container.appendChild(preDom);
+      }
+    }, {
+      key: "text",
+      value: function text(ctx, options) {
+        options.size = options.size || 16;
+        options.lineHeight = options.lineHeight || 20;
+        options.font = options.font || '"PingFang SC","Microsoft YaHei","微软雅黑"';
+        var string = options.text;
+        ctx.save();
+        ctx.textBaseline = 'middle';
+        ctx.font = "".concat(options.size, "px/").concat(options.lineHeight, "px ").concat(options.font);
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = options.color || '#f00'; // if (typeof maxWidth !== 'undefined') {
+        //   string = string.replace(/<br>/g, '\n').split(/\n/).map(p => this.transformText(ctx, p, maxWidth)).join('\n');
+        // }
+
+        string.replace(/<br>/g, '\n').split(/\n/).map(function (value, index) {
+          ctx.fillText(value, options.position.x + 2, options.position.y + index * options.lineHeight + options.lineHeight / 2 + 2); // return null;
+        });
+        ctx.restore();
       }
     }]);
 

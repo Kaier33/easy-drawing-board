@@ -9,9 +9,7 @@ class Draw {
       arrowSize = 15,
       canvasBgColor = "#fff",
     } = options;
-    if (!container) {
-      throw Error("No container element were found...");
-    }
+    if (!container) throw Error("No container element were found...");
     this.canvas = this.createCanvasEl(container);
     this.context = this.canvas.getContext("2d");
     this.type = "pencil";
@@ -25,6 +23,9 @@ class Draw {
     this.isDrawing = false;
     this.image = new Image();
     this.bgImg = bgImg;
+    this.textareaEl = null; // textArea元素
+    this.measureEl = null; // pre元素
+    this.textMeasure();
   }
 
   createCanvasEl(container) {
@@ -38,8 +39,7 @@ class Draw {
   }
 
   init() {
-    let originX,
-      originY = null; // 鼠标的坐标 (屏幕坐标 + 容器偏移量)
+    let originX, originY = null; // 鼠标的坐标 (屏幕坐标 + 容器偏移量)
     const {
       x: c_offsetLeft,
       y: c_offsetTop,
@@ -55,6 +55,9 @@ class Draw {
       originX = clientX - c_offsetLeft;
       originY = clientY - c_offsetTop;
 
+      const ft_originX = originX
+      const ft_originY = originY
+
       if (this.type === "arrow") {
         this.arrowPoints = [];
         this.arrowPoints.push({
@@ -68,6 +71,46 @@ class Draw {
       this.context.strokeStyle = this.lineColor;
       this.context.fillStyle = this.lineColor;
       this.context.beginPath();
+
+      // text start
+      if (this.type === 'text') {
+        this.type = null
+        let boxDom = document.createElement('div')
+        boxDom.classList.add('text-component')
+        boxDom.style.left = `${originX}px`
+        boxDom.style.top = `${originY}px`
+        this.boxDom = boxDom
+        let textareaEl = document.createElement('textarea')
+        this.textareaEl = textareaEl
+        // console.log(this.textareaEl)
+        textareaEl.style.width = '100%'
+        textareaEl.style.height = '100%'
+        textareaEl.style.color = this.lineColor
+        textareaEl.style.fontSize = '16px'
+        textareaEl.style.lineHeight = '20px'
+        textareaEl.placeholder = '请点击输入'
+        textareaEl.setAttribute('autofocus', true)
+        this.boxDom.appendChild(textareaEl)
+        this.container.appendChild(this.boxDom)
+        textareaEl.onblur = () => {
+          this.type = null
+          textareaEl.removeAttribute('autofocus')
+          this.text(this.context, {
+            text: textareaEl.value,
+            position: {
+              x: ft_originX,
+              y: ft_originY
+            }
+          })
+          this.container.removeChild(boxDom)
+        }
+        textareaEl.addEventListener('input', (e)=> {
+          this.measureEl.innerHTML = e.target.value + ' ';
+          this.textareaEl.style.width = this.measureEl.clientWidth + 'px';
+          this.textareaEl.style.height = this.measureEl.clientHeight + 'px';
+        })
+      }
+      // text end
     });
 
     this.canvas.addEventListener("mousemove", (event) => {
@@ -216,6 +259,39 @@ class Draw {
   config(type, value) {
     this[type] = value;
     type === "canvasBgColor" && this.clear();
+  }
+
+  textMeasure() {
+    let preDom = document.createElement('pre')
+    preDom.classList.add('sketch-temp')
+    preDom.classList.add('text-pre')
+    preDom.style.fontSize = '16px'
+    preDom.style.lineHeight = '20px'
+    this.measureEl = preDom
+    this.container.appendChild(preDom)
+  }
+
+  text(ctx, options) {
+    options.size = options.size || 16;
+    options.lineHeight = options.lineHeight || 20;
+    options.font = options.font || '"PingFang SC","Microsoft YaHei","微软雅黑"';
+    let string = options.text;
+    ctx.save();
+    ctx.textBaseline = 'middle';
+    ctx.font = `${options.size}px/${options.lineHeight}px ${options.font}`;
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = options.color || '#f00';
+    // if (typeof maxWidth !== 'undefined') {
+    //   string = string.replace(/<br>/g, '\n').split(/\n/).map(p => this.transformText(ctx, p, maxWidth)).join('\n');
+    // }
+    string.replace(/<br>/g, '\n').split(/\n/).map((value, index) => {
+      ctx.fillText(value,
+        options.position.x + 2,
+        options.position.y + index * options.lineHeight + options.lineHeight / 2 + 2
+      );
+      // return null;
+    });
+    ctx.restore();
   }
 }
 
