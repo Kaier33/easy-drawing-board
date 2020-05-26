@@ -77,11 +77,12 @@ class Draw {
       if (this.type === 'text') {
         this.type = null
         let boxDom = document.createElement('div')
-        boxDom.classList.add('text-component')
+        boxDom.classList.add('__edb-textarea-box')
         boxDom.style.left = `${originX}px`
         boxDom.style.top = `${originY}px`
         this.boxDom = boxDom
         let textareaEl = document.createElement('textarea')
+        textareaEl.classList.add('__edb-textarea')
         this.textareaEl = textareaEl
         textareaEl.style.width = '100%'
         textareaEl.style.height = '100%'
@@ -263,8 +264,7 @@ class Draw {
 
   textMeasure() {
     let preDom = document.createElement('pre')
-    preDom.classList.add('sketch-temp')
-    preDom.classList.add('text-pre')
+    preDom.classList.add('__edb-text-pre')
     preDom.style.fontSize = '16px'
     preDom.style.lineHeight = '20px'
     this.measureEl = preDom
@@ -281,18 +281,21 @@ class Draw {
     ctx.font = `${options.size}px/${options.lineHeight}px ${options.font}`;
     ctx.globalCompositeOperation = 'source-over';
     ctx.fillStyle = options.color || '#f00';
-    // if (typeof maxWidth !== 'undefined') {
-    //   string = string.replace(/<br>/g, '\n').split(/\n/).map(p => this.transformText(ctx, p, maxWidth)).join('\n');
-    // }
     string.replace(/<br>/g, '\n').split(/\n/).map((value, index) => {
       ctx.fillText(value,
         options.position.x + 2,
         options.position.y + index * options.lineHeight + options.lineHeight / 2 + 2
       );
-      // return null;
     });
     ctx.restore();
   }
 }
 
 export default Draw;
+
+// todo:
+// 创建dom的抽象
+// 模糊问题.
+// 橡皮檫.
+// 事件抽象.
+// ts重构.

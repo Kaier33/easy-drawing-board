@@ -1,4 +1,4 @@
-.text-component {
+.__edb-textarea-box {
   position: absolute;
   z-index: 101;
   width: auto;
@@ -8,31 +8,29 @@
   word-break: break-all;
   color: #aaa;
   border: 1px dashed gray;
-}
-textarea {
-  resize: none;
-  background: transparent;
-  border: none;
-  padding: 1px;
-  outline: none;
-  font-family: "PingFang SC", "Microsoft YaHei", "微软雅黑";
-  font-size: 24px;
-  line-height: 28px;
-  overflow: hidden;
+  .__edb-textarea {
+    resize: none;
+    background: transparent;
+    border: none;
+    padding: 1px;
+    outline: none;
+    font-family: "PingFang SC", "Microsoft YaHei", "微软雅黑";
+    font-size: 24px;
+    line-height: 28px;
+    overflow: hidden;
+  }
 }
 
-.sketch-temp {
+.__edb-text-pre {
   position: absolute;
   z-index: 999;
   top: 0;
-  left: 0;
-}
-.sketch-temp.text-pre {
   left: -9999px;
+  min-width: 100px;
   display: inline-block;
   border: 1px solid red;
   padding: 2px;
   font-family: "PingFang SC", "Microsoft YaHei", "微软雅黑";
-  font-size: 24px;
-  line-height: 28px;
+  font-size: 16px;
+  line-height: 20px;
 }
