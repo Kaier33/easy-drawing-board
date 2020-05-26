@@ -2,17 +2,20 @@
 
 a easy to use drawing board lib 🎨
 
-### Install
+## Install
 
 ```
 npm i easy-drawing-board
 ```
 or
 ```html
-<script src="your_path/dist/easy-drawing-board.min.js"></script>
+<script src="your_path/dist/easy-drawing-board.js"></script>
 ```
+## Usage
 
-### License
+🕊🕊🕊
+
+## License
 [MIT](https://opensource.org/licenses/MIT)  
 
 Copyright (c) 2020-present, Kaier33

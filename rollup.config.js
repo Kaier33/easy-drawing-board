@@ -1,6 +1,7 @@
 import { terser } from 'rollup-plugin-terser';
 import resolve from '@rollup/plugin-node-resolve';
 import babel from '@rollup/plugin-babel';
+import postcss from 'rollup-plugin-postcss';
 
 export default {
   input: 'src/index.js',
@@ -9,16 +10,12 @@ export default {
       file: './dist/easy-drawing-board.js',
       format: 'umd',
       name: 'EasyDrawingBoard'
-    },
-    {
-      file: './dist/easy-drawing-board.min.js',
-      format: 'iife',
-      name: 'EasyDrawingBoard',
-      plugins: [terser()]
     }
   ],
   plugins: [
+    terser(),
     resolve(),
-    babel({ babelHelpers: 'bundled' })
+    babel({ babelHelpers: 'bundled' }),
+    postcss()
   ]
 }
