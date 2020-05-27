@@ -4,9 +4,9 @@ class Draw {
   constructor(options) {
     const {
       container,
+      bgImg = "",
       lineColor = "#f00",
       lineWidth = "1",
-      bgImg = "",
       arrowSize = 15,
       canvasBgColor = "#fff",
       textFontSize = 16,
@@ -17,16 +17,10 @@ class Draw {
     this.container = container;
     this.canvas = this.createCanvasEl(container);
     this.context = this.canvas.getContext("2d");
-    this.type = "pencil";
+    this.mode = "pencil";
     this.canvasWidth = this.canvas.width;
     this.canvasHeight = this.canvas.height;
-    this.canvasBgColor = canvasBgColor;
-    this.lineWidth = lineWidth;
-    this.lineColor = lineColor;
-    this.textFontSize = textFontSize;
-    this.textLineHeight = textLineHeight;
-    this.textColor = textColor;
-    this.arrowSize = arrowSize;
+    this.configuration = { lineColor, lineWidth, arrowSize, canvasBgColor, textFontSize, textLineHeight, textColor };
     this.arrowPoints = [];
     this.isDrawing = false;
     this.image = new Image();
@@ -62,13 +56,13 @@ class Draw {
       const ft_originY = originY;
 
       this.context.moveTo(originX, originY);
-      this.context.lineWidth = this.lineWidth;
-      this.context.strokeStyle = this.lineColor;
-      this.context.fillStyle = this.lineColor;
+      this.context.lineWidth = this.configuration.lineWidth;
+      this.context.strokeStyle = this.configuration.lineColor;
+      this.context.fillStyle = this.configuration.lineColor;
       this.context.beginPath();
 
-      this.type === 'arrow' && this.saveArrowPoint({x: originX, y: originY})
-      this.type === 'text' && this.createTextArea({x: ft_originX, y: ft_originY})
+      this.mode === 'arrow' && this.saveArrowPoint({x: originX, y: originY})
+      this.mode === 'text' && this.createTextArea({x: ft_originX, y: ft_originY})
     });
 
     this.canvas.addEventListener("mousemove", (event) => {
@@ -104,7 +98,7 @@ class Draw {
           distanceY,
         };
         let mousemoveEvent = this.handleMousemove();
-        let currMousemoveEvent = mousemoveEvent[this.type];
+        let currMousemoveEvent = mousemoveEvent[this.mode];
         currMousemoveEvent && currMousemoveEvent(mousePosition);
       }
     });
@@ -129,7 +123,7 @@ class Draw {
   }
 
   clear() {
-    this.context.fillStyle = this.canvasBgColor;
+    this.context.fillStyle = this.configuration.canvasBgColor;
     this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.drawBackground();
   }
@@ -194,7 +188,7 @@ class Draw {
         };
         drawArrow(this.context, {
           points: this.arrowPoints,
-          arrowSize: this.arrowSize,
+          arrowSize: this.configuration.arrowSize,
           canvasWidth: this.canvasWidth,
           canvasHeight: this.canvasHeight
         });
@@ -228,7 +222,7 @@ class Draw {
       Dom.removeChild(this.container, this.measureEl);
       this.measureEl = null;
     }
-    this.measureEl = Dom.createEl('pre', { styles: { fontSize: `${this.textFontSize}px`, lineHeight: `${this.textLineHeight}px`, color: this.textColor }});
+    this.measureEl = Dom.createEl('pre', { styles: { fontSize: `${this.configuration.textFontSize}px`, lineHeight: `${this.configuration.textLineHeight}px`, color: this.configuration.textColor }});
     Dom.addClass(this.measureEl, '__edb-text-pre');
     Dom.appendChild(this.container, this.measureEl);
   }
@@ -238,28 +232,28 @@ class Draw {
     let string = options.text;
     ctx.save();
     ctx.textBaseline = 'middle';
-    ctx.font = `${this.textFontSize}px/${this.textLineHeight}px ${options.font}`;
-    ctx.fillStyle = this.textColor;
+    ctx.font = `${this.configuration.textFontSize}px/${this.configuration.textLineHeight}px ${options.font}`;
+    ctx.fillStyle = this.configuration.textColor;
     ctx.globalCompositeOperation = 'source-over';
     string.replace(/<br>/g, '\n').split(/\n/).map((value, index) => {
       ctx.fillText(value,
         options.position.x + 2,
-        options.position.y + index * this.textLineHeight + this.textLineHeight / 2 + 2
+        options.position.y + index * this.configuration.textLineHeight + this.configuration.textLineHeight / 2 + 2
       );
     });
     ctx.restore();
   }
 
   createTextArea(position) {
-    this.type = null
+    this.mode = null
 
     this.boxDom = Dom.createEl('div', {
-      styles: {left: `${position.x}px`, top: `${position.y}px`, lineHeight: `${this.textLineHeight}px`, fontSize: `${this.textFontSize}px`}
+      styles: {left: `${position.x}px`, top: `${position.y}px`, lineHeight: `${this.configuration.textLineHeight}px`, fontSize: `${this.configuration.textFontSize}px`}
     })
     Dom.addClass(this.boxDom, '__edb-textarea-box')
 
     this.textareaEl = Dom.createEl('textarea', { 
-      styles: { lineHeight: `${this.textLineHeight}px`, color: this.textColor, fontSize: `${this.textFontSize}px` }, 
+      styles: { lineHeight: `${this.configuration.textLineHeight}px`, color: this.configuration.textColor, fontSize: `${this.configuration.textFontSize}px` }, 
       props: { placeholder: '请点击输入', autofocus: true }
     })
     Dom.addClass(this.textareaEl, '__edb-textarea')
@@ -268,7 +262,7 @@ class Draw {
     Dom.appendChild(this.container, this.boxDom)
 
     this.textareaEl.onblur = () => {
-      this.type = null
+      this.mode = null
       Dom.delAttr(this.textareaEl, 'autofocus')
       this.drawText(this.context, {
         text: this.textareaEl.value,
@@ -284,22 +278,20 @@ class Draw {
   }
 
   // Change the default setting
-  // type(pencil, straightLine, rect, circle, arrow), lineWidth, color, arrowSize, canvasBgColor
   config(type, value) {
-    this[type] = value;
+    this.configuration[type] = value;
     type === "canvasBgColor" && this.clear();
     (type === "textFontSize" || type === 'textColor' || type === 'textLineHeight') && this.createTextMeasure();
+  }
+  setMode(mode) {
+    this.mode = mode;
   }
 }
 
 export default Draw;
 
 // todo:
-// 创建dom的抽象 - ok
-// 文字模糊问题.
 // 撤回操作. (顶多10步)
 // 橡皮檫.
 // 事件抽象.
 // ts重构.
-
-// other config 有风险. 有一个对象包裹起来好一点
