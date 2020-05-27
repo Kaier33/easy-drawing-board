@@ -32,7 +32,9 @@
         width: 600px;
         height: 600px;
       }
-      .currLineWeight {
+      .fontSize,
+      .textLineHeight,
+      .currLineWidth {
         display: inline-block;
         min-width: 40px !important;
       }
@@ -51,9 +53,17 @@
       <button class="btn" id="text">文字</button>
     </div>
     <div>
-      <label>颜色 <input onchange="colorChange(event)" id="color" type="color" value="#f00f00"></label>
+      <label>线条颜色 <input onchange="colorChange(event)" id="color" type="color" value="#f00f00"></label>
       &nbsp;&nbsp;&nbsp;
-      <label>线条粗细: <i class="currLineWeight">1</i><input id="lineWeight" type="range" onchange="rangeChange(event)" min="1" max="50" value="1"></label>
+      <label>线条粗细: <i class="currLineWidth">1</i><input type="range" onchange="rangeChange(event)" min="1" max="50" value="1"></label>
+    </div>
+    <div>
+      <label>文字颜色 <input onchange="colorChange2(event)" id="textColor" type="color" value="#f00f00"></label>
+      &nbsp;&nbsp;&nbsp;
+      <label>文字大小: <i class="fontSize">16</i><input type="range" onchange="rangeChange2(event)" min="12" max="22" value="16"></label>
+      <label>文字行高: <i class="textLineHeight">20</i><input type="range" onchange="rangeChange3(event)" min="16" max="30" value="20"></label>
+    </div>
+    <div>
       <button class="btn" onclick="exportBase64()">export base64 data</button>
       <button class="btn" onclick="saveImg()">save</button>
     </div>
@@ -63,7 +73,7 @@
   <script>
     let draw = null;
     function rangeChange(e) {
-      let dom = document.getElementsByClassName('currLineWeight')[0];
+      let dom = document.getElementsByClassName('currLineWidth')[0];
       dom.innerHTML = e.target.value
       draw && draw.config('lineWidth', e.target.value)
     }
@@ -71,6 +81,23 @@
       let dom = document.getElementById('color');
       draw && draw.config('lineColor', e.target.value)
     }
+
+    function rangeChange2(e) {
+      let dom = document.getElementsByClassName('fontSize')[0];
+      dom.innerHTML = e.target.value
+      draw && draw.config('textFontSize', e.target.value)
+    }
+    function rangeChange3(e) {
+      let dom = document.getElementsByClassName('textLineHeight')[0];
+      dom.innerHTML = e.target.value
+      draw && draw.config('textLineHeight', e.target.value)
+    }
+    function colorChange2(e) {
+      let dom = document.getElementById('textColor');
+      draw && draw.config('textColor', e.target.value)
+    }
+
+
 
     function exportBase64() {
       draw && console.log(draw.exportBase64())

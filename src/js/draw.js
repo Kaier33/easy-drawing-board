@@ -9,6 +9,9 @@ class Draw {
       bgImg = "",
       arrowSize = 15,
       canvasBgColor = "#fff",
+      textFontSize = 16,
+      textLineHeight = 20,
+      textColor = "#f00"
     } = options;
     if (!container) throw Error("No container element were found...");
     this.container = container;
@@ -20,6 +23,9 @@ class Draw {
     this.canvasBgColor = canvasBgColor;
     this.lineWidth = lineWidth;
     this.lineColor = lineColor;
+    this.textFontSize = textFontSize;
+    this.textLineHeight = textLineHeight;
+    this.textColor = textColor;
     this.arrowSize = arrowSize;
     this.arrowPoints = [];
     this.isDrawing = false;
@@ -27,30 +33,21 @@ class Draw {
     this.bgImg = bgImg;
     this.textareaEl = null;
     this.measureEl = null;
-    this.textMeasure();
+    this.createTextMeasure();
   }
 
   createCanvasEl(container) {
     const canvasEl = Dom.createEl('canvas', {
-      styles: {
-        height: `${container.clientHeight}px`,
-        width: `${container.clientWidth}px`
-      },
-      attrs: {
-        width: container.clientHeight,
-        height: container.clientWidth
-      }
-    })
-    Dom.appendChild(container, canvasEl)
-    return canvasEl
+      styles: { height: `${container.clientHeight}px`, width: `${container.clientWidth}px` },
+      attrs: { width: container.clientHeight, height: container.clientWidth }
+    });
+    Dom.appendChild(container, canvasEl);
+    return canvasEl;
   }
 
   init() {
     let originX, originY = null; // 鼠标的坐标 (屏幕坐标 + 容器偏移量)
-    const {
-      x: c_offsetLeft,
-      y: c_offsetTop,
-    } = this.canvas.getBoundingClientRect();
+    const { x: c_offsetLeft, y: c_offsetTop } = this.canvas.getBoundingClientRect();
     this.clear();
 
     this.canvas.addEventListener("mousedown", (event) => {
@@ -60,17 +57,9 @@ class Draw {
       // 鼠标按下时, canvas的初始坐标 (会随着move而变)
       originX = clientX - c_offsetLeft;
       originY = clientY - c_offsetTop;
-      // 记录初始点下的坐标
+      // 记录初始按下的坐标
       const ft_originX = originX;
       const ft_originY = originY;
-
-      if (this.type === "arrow") {
-        this.arrowPoints = [];
-        this.arrowPoints.push({
-          x: originX / this.canvasWidth,
-          y: originY / this.canvasHeight,
-        });
-      }
 
       this.context.moveTo(originX, originY);
       this.context.lineWidth = this.lineWidth;
@@ -78,41 +67,8 @@ class Draw {
       this.context.fillStyle = this.lineColor;
       this.context.beginPath();
 
-      // text start
-      if (this.type === 'text') {
-        this.type = null
-
-        this.boxDom = Dom.createEl('div', { styles: {left: `${originX}px`, top: `${originY}px`}})
-        Dom.addClass(this.boxDom, '__edb-textarea-box')
-
-        this.textareaEl = Dom.createEl('textarea', { 
-          styles: { color: this.lineColor }, 
-          props: { placeholder: '请点击输入', autofocus: true }
-        })
-        Dom.addClass(this.textareaEl, '__edb-textarea')
-        
-        Dom.appendChild(this.boxDom, this.textareaEl)
-        Dom.appendChild(this.container, this.boxDom)
-
-        this.textareaEl.onblur = () => {
-          this.type = null
-          Dom.delAttr(this.textareaEl, 'autofocus')
-          this.text(this.context, {
-            text: this.textareaEl.value,
-            position: {
-              x: ft_originX,
-              y: ft_originY
-            }
-          })
-          Dom.removeChild(this.container, this.boxDom)
-        }
-        this.textareaEl.addEventListener('input', (e)=> {
-          this.measureEl.innerHTML = e.target.value + ' ';
-          this.textareaEl.style.width = this.measureEl.clientWidth + 'px';
-          this.textareaEl.style.height = this.measureEl.clientHeight + 'px';
-        })
-      }
-      // text end
+      this.type === 'arrow' && this.saveArrowPoint({x: originX, y: originY})
+      this.type === 'text' && this.createTextArea({x: ft_originX, y: ft_originY})
     });
 
     this.canvas.addEventListener("mousemove", (event) => {
@@ -179,6 +135,8 @@ class Draw {
   }
 
   drawBackground() {
+    // 这里如果用 createEl去创建元素, F5刷新一下, 图片会从disk cache读取, 会导致后续canvs.toDataUrl报错
+    // 不过这样话, 后续的缓存是从 内存中取, 速度会快点
     if (this.bgImg) {
       const that = this
       const img = new Image();
@@ -257,36 +215,80 @@ class Draw {
     aEl.click();
   }
 
+  saveArrowPoint(position) {
+    this.arrowPoints = [];
+    this.arrowPoints.push({
+      x: position.x / this.canvasWidth,
+      y: position.y / this.canvasHeight,
+    });
+  }
+
+  createTextMeasure() {
+    if (this.measureEl) {
+      Dom.removeChild(this.container, this.measureEl);
+      this.measureEl = null;
+    }
+    this.measureEl = Dom.createEl('pre', { styles: { fontSize: `${this.textFontSize}px`, lineHeight: `${this.textLineHeight}px`, color: this.textColor }});
+    Dom.addClass(this.measureEl, '__edb-text-pre');
+    Dom.appendChild(this.container, this.measureEl);
+  }
+
+  drawText(ctx, options) {
+    options.font = options.font || '"PingFang SC","Microsoft YaHei","微软雅黑"';
+    let string = options.text;
+    ctx.save();
+    ctx.textBaseline = 'middle';
+    ctx.font = `${this.textFontSize}px/${this.textLineHeight}px ${options.font}`;
+    ctx.fillStyle = this.textColor;
+    ctx.globalCompositeOperation = 'source-over';
+    string.replace(/<br>/g, '\n').split(/\n/).map((value, index) => {
+      ctx.fillText(value,
+        options.position.x + 2,
+        options.position.y + index * this.textLineHeight + this.textLineHeight / 2 + 2
+      );
+    });
+    ctx.restore();
+  }
+
+  createTextArea(position) {
+    this.type = null
+
+    this.boxDom = Dom.createEl('div', {
+      styles: {left: `${position.x}px`, top: `${position.y}px`, lineHeight: `${this.textLineHeight}px`, fontSize: `${this.textFontSize}px`}
+    })
+    Dom.addClass(this.boxDom, '__edb-textarea-box')
+
+    this.textareaEl = Dom.createEl('textarea', { 
+      styles: { lineHeight: `${this.textLineHeight}px`, color: this.textColor, fontSize: `${this.textFontSize}px` }, 
+      props: { placeholder: '请点击输入', autofocus: true }
+    })
+    Dom.addClass(this.textareaEl, '__edb-textarea')
+    
+    Dom.appendChild(this.boxDom, this.textareaEl)
+    Dom.appendChild(this.container, this.boxDom)
+
+    this.textareaEl.onblur = () => {
+      this.type = null
+      Dom.delAttr(this.textareaEl, 'autofocus')
+      this.drawText(this.context, {
+        text: this.textareaEl.value,
+        position
+      })
+      Dom.removeChild(this.container, this.boxDom)
+    }
+    this.textareaEl.addEventListener('input', (e)=> {
+      this.measureEl.innerHTML = e.target.value + ' ';
+      this.textareaEl.style.width = this.measureEl.clientWidth + 'px';
+      this.textareaEl.style.height = this.measureEl.clientHeight + 'px';
+    })
+  }
+
   // Change the default setting
   // type(pencil, straightLine, rect, circle, arrow), lineWidth, color, arrowSize, canvasBgColor
   config(type, value) {
     this[type] = value;
     type === "canvasBgColor" && this.clear();
-  }
-
-  textMeasure() {
-    this.measureEl = Dom.createEl('pre', { styles: { fontSize: '16px', lineHeight: '20px' }});
-    Dom.addClass(this.measureEl, '__edb-text-pre');
-    Dom.appendChild(this.container, this.measureEl)
-  }
-
-  text(ctx, options) {
-    options.size = options.size || 16;
-    options.lineHeight = options.lineHeight || 20;
-    options.font = options.font || '"PingFang SC","Microsoft YaHei","微软雅黑"';
-    let string = options.text;
-    ctx.save();
-    ctx.textBaseline = 'middle';
-    ctx.font = `${options.size}px/${options.lineHeight}px ${options.font}`;
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.fillStyle = options.color || '#f00';
-    string.replace(/<br>/g, '\n').split(/\n/).map((value, index) => {
-      ctx.fillText(value,
-        options.position.x + 2,
-        options.position.y + index * options.lineHeight + options.lineHeight / 2 + 2
-      );
-    });
-    ctx.restore();
+    (type === "textFontSize" || type === 'textColor' || type === 'textLineHeight') && this.createTextMeasure();
   }
 }
 
@@ -294,7 +296,7 @@ export default Draw;
 
 // todo:
 // 创建dom的抽象 - ok
-// 模糊问题.
+// 文字模糊问题.
 // 撤回操作. (顶多10步)
 // 橡皮檫.
 // 事件抽象.
