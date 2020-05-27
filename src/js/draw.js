@@ -180,18 +180,12 @@ class Draw {
 
   drawBackground() {
     if (this.bgImg) {
-      const that = this;
-      if (!this.bgImgDom) {
-        this.bgImgDom = Dom.createEl('img', {
-          attrs: { src: this.bgImg, crossOrigin: 'anonymous' },
-          props: {
-            onload: function() {
-              that.context.drawImage(this, 0, 0, that.canvasWidth, that.canvasHeight);
-            }
-          }
-        })
-      } else {
-        this.context.drawImage(this.bgImgDom, 0, 0, this.canvasWidth, this.canvasHeight);
+      const that = this
+      const img = new Image();
+      img.setAttribute('crossOrigin', 'anonymous');
+      img.src = this.bgImg;
+      img.onload = function() {
+        that.context.drawImage(this, 0, 0, that.canvasWidth, that.canvasHeight);
       }
     }
   }
