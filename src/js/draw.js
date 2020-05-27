@@ -1,4 +1,5 @@
 import { drawArrow } from './utils';
+import Dom from './dom';
 class Draw {
   constructor(options) {
     const {
@@ -30,13 +31,18 @@ class Draw {
   }
 
   createCanvasEl(container) {
-    const canvasEl = document.createElement("canvas");
-    canvasEl.style.height = `${container.clientHeight}px`;
-    canvasEl.style.width = `${container.clientWidht}px`;
-    canvasEl.height = container.clientHeight;
-    canvasEl.width = container.clientWidth;
-    container.appendChild(canvasEl);
-    return canvasEl;
+    const canvasEl = Dom.createEl('canvas', {
+      styles: {
+        height: `${container.clientHeight}px`,
+        width: `${container.clientWidth}px`
+      },
+      attrs: {
+        width: container.clientHeight,
+        height: container.clientWidth
+      }
+    })
+    Dom.appendChild(container, canvasEl)
+    return canvasEl
   }
 
   init() {
@@ -46,18 +52,17 @@ class Draw {
       y: c_offsetTop,
     } = this.canvas.getBoundingClientRect();
     this.clear();
-    this.drawBackground();
 
     this.canvas.addEventListener("mousedown", (event) => {
       this.isDrawing = true;
       this.image.src = this.canvas.toDataURL("image/png");
       const { clientX, clientY } = event;
-      // 鼠标按下时, canvas的初始坐标
+      // 鼠标按下时, canvas的初始坐标 (会随着move而变)
       originX = clientX - c_offsetLeft;
       originY = clientY - c_offsetTop;
-
-      const ft_originX = originX
-      const ft_originY = originY
+      // 记录初始点下的坐标
+      const ft_originX = originX;
+      const ft_originY = originY;
 
       if (this.type === "arrow") {
         this.arrowPoints = [];
@@ -76,36 +81,32 @@ class Draw {
       // text start
       if (this.type === 'text') {
         this.type = null
-        let boxDom = document.createElement('div')
-        boxDom.classList.add('__edb-textarea-box')
-        boxDom.style.left = `${originX}px`
-        boxDom.style.top = `${originY}px`
-        this.boxDom = boxDom
-        let textareaEl = document.createElement('textarea')
-        textareaEl.classList.add('__edb-textarea')
-        this.textareaEl = textareaEl
-        textareaEl.style.width = '100%'
-        textareaEl.style.height = '100%'
-        textareaEl.style.color = this.lineColor
-        textareaEl.style.fontSize = '16px'
-        textareaEl.style.lineHeight = '20px'
-        textareaEl.placeholder = '请点击输入'
-        textareaEl.setAttribute('autofocus', true)
-        this.boxDom.appendChild(textareaEl)
-        this.container.appendChild(boxDom)
-        textareaEl.onblur = () => {
+
+        this.boxDom = Dom.createEl('div', { styles: {left: `${originX}px`, top: `${originY}px`}})
+        Dom.addClass(this.boxDom, '__edb-textarea-box')
+
+        this.textareaEl = Dom.createEl('textarea', { 
+          styles: { color: this.lineColor }, 
+          props: { placeholder: '请点击输入', autofocus: true }
+        })
+        Dom.addClass(this.textareaEl, '__edb-textarea')
+        
+        Dom.appendChild(this.boxDom, this.textareaEl)
+        Dom.appendChild(this.container, this.boxDom)
+
+        this.textareaEl.onblur = () => {
           this.type = null
-          textareaEl.removeAttribute('autofocus')
+          Dom.delAttr(this.textareaEl, 'autofocus')
           this.text(this.context, {
-            text: textareaEl.value,
+            text: this.textareaEl.value,
             position: {
               x: ft_originX,
               y: ft_originY
             }
           })
-          this.container.removeChild(boxDom)
+          Dom.removeChild(this.container, this.boxDom)
         }
-        textareaEl.addEventListener('input', (e)=> {
+        this.textareaEl.addEventListener('input', (e)=> {
           this.measureEl.innerHTML = e.target.value + ' ';
           this.textareaEl.style.width = this.measureEl.clientWidth + 'px';
           this.textareaEl.style.height = this.measureEl.clientHeight + 'px';
@@ -180,12 +181,18 @@ class Draw {
   drawBackground() {
     if (this.bgImg) {
       const that = this;
-      const img = new Image();
-      img.setAttribute("crossOrigin", "anonymous");
-      img.src = this.bgImg;
-      img.onload = function () {
-        that.context.drawImage(this, 0, 0, that.canvasWidth, that.canvasHeight);
-      };
+      if (!this.bgImgDom) {
+        this.bgImgDom = Dom.createEl('img', {
+          attrs: { src: this.bgImg, crossOrigin: 'anonymous' },
+          props: {
+            onload: function() {
+              that.context.drawImage(this, 0, 0, that.canvasWidth, that.canvasHeight);
+            }
+          }
+        })
+      } else {
+        this.context.drawImage(this.bgImgDom, 0, 0, this.canvasWidth, this.canvasHeight);
+      }
     }
   }
 
@@ -249,9 +256,10 @@ class Draw {
   }
 
   saveImg(options = {type: 'png', fileName: 'canvas_image'}) {
-    const aEl = document.createElement('a');
-    aEl.href = this.canvas.toDataURL(`image/${options.type}`);
-    aEl.download = `${options.fileName}.${options.type}`;
+    const aEl = Dom.createEl('a', { attrs: {
+      href: this.canvas.toDataURL(`image/${options.type}`),
+      download: `${options.fileName}.${options.type}`}
+    });
     aEl.click();
   }
 
@@ -263,12 +271,9 @@ class Draw {
   }
 
   textMeasure() {
-    let preDom = document.createElement('pre')
-    preDom.classList.add('__edb-text-pre')
-    preDom.style.fontSize = '16px'
-    preDom.style.lineHeight = '20px'
-    this.measureEl = preDom
-    this.container.appendChild(preDom)
+    this.measureEl = Dom.createEl('pre', { styles: { fontSize: '16px', lineHeight: '20px' }});
+    Dom.addClass(this.measureEl, '__edb-text-pre');
+    Dom.appendChild(this.container, this.measureEl)
   }
 
   text(ctx, options) {
@@ -294,8 +299,11 @@ class Draw {
 export default Draw;
 
 // todo:
-// 创建dom的抽象
+// 创建dom的抽象 - ok
 // 模糊问题.
+// 撤回操作. (顶多10步)
 // 橡皮檫.
 // 事件抽象.
 // ts重构.
+
+// other config 有风险. 有一个对象包裹起来好一点
