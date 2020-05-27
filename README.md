@@ -19,3 +19,10 @@ or
 [MIT](https://opensource.org/licenses/MIT)  
 
 Copyright (c) 2020-present, Kaier33
+  
+
+## Todo
+
+- [ ] eraser
+- [ ] undo
+- [ ] typescript refactoring

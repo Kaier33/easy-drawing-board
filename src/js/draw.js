@@ -122,12 +122,6 @@ class Draw {
     }
   }
 
-  clear() {
-    this.context.fillStyle = this.configuration.canvasBgColor;
-    this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-    this.drawBackground();
-  }
-
   drawBackground() {
     // 这里如果用 createEl去创建元素, F5刷新一下, 图片会从disk cache读取, 会导致后续canvs.toDataUrl报错
     // 不过这样话, 后续的缓存是从 内存中取, 速度会快点
@@ -195,18 +189,6 @@ class Draw {
       },
       clear: () => this.clear(),
     };
-  }
-
-  exportBase64(type = "png") {
-    return this.canvas.toDataURL(`image/${type}`);
-  }
-
-  saveImg(options = {type: 'png', fileName: 'canvas_image'}) {
-    const aEl = Dom.createEl('a', { attrs: {
-      href: this.canvas.toDataURL(`image/${options.type}`),
-      download: `${options.fileName}.${options.type}`}
-    });
-    aEl.click();
   }
 
   saveArrowPoint(position) {
@@ -277,6 +259,7 @@ class Draw {
     })
   }
 
+  // api
   // Change the default setting
   config(type, value) {
     this.configuration[type] = value;
@@ -285,6 +268,24 @@ class Draw {
   }
   setMode(mode) {
     this.mode = mode;
+  }
+
+  exportBase64(type = "png") {
+    return this.canvas.toDataURL(`image/${type}`);
+  }
+
+  saveImg(options = {type: 'png', fileName: 'canvas_image'}) {
+    const aEl = Dom.createEl('a', { attrs: {
+      href: this.canvas.toDataURL(`image/${options.type}`),
+      download: `${options.fileName}.${options.type}`}
+    });
+    aEl.click();
+  }
+
+  clear() {
+    this.context.fillStyle = this.configuration.canvasBgColor;
+    this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+    this.drawBackground();
   }
 }
 
