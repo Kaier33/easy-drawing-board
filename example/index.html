@@ -73,7 +73,7 @@
       <label>背景颜色 <input onchange="colorChange3(event)" id="bgColor" type="color" value="#ffffff"></label>
     </div>
     <div>
-      <button class="btn" onclick="exportBase64()">export base64 data</button>
+      <button class="btn" onclick="generateBase64()">export base64 data</button>
       <button class="btn" onclick="saveImg()">save</button>
     </div>
     <p>左图: 是纯色背景; 右图: 用于图片的批注</p>
@@ -124,9 +124,9 @@
     }
 
 
-    function exportBase64() {
-      draw && console.log(draw.exportBase64())
-      draw2 && console.log(draw2.exportBase64())
+    function generateBase64() {
+      draw && console.log('1::', draw.generateBase64())
+      draw2 && console.log("2::", draw2.generateBase64())
       alert('已输出至于 控制台')
     }
 
@@ -153,11 +153,9 @@
         bgImg: 'http://image.kaier33.top/ori.jpg'
       };
       draw = new EasyDrawingBoard(options);
-      draw.init()
 
       const container2 = document.getElementsByClassName('container2')[0];
       draw2 = new EasyDrawingBoard({container: container2});
-      draw2.init()
     };
   </script>
   

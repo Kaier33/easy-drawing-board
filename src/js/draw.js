@@ -28,6 +28,7 @@ class Draw {
     this.textareaEl = null;
     this.measureEl = null;
     this.createTextMeasure();
+    this.init();
   }
 
   createCanvasEl(container) {
@@ -270,7 +271,7 @@ class Draw {
     this.mode = mode;
   }
 
-  exportBase64(type = "png") {
+  generateBase64(type = "png") {
     return this.canvas.toDataURL(`image/${type}`);
   }
 
