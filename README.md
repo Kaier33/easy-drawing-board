@@ -16,6 +16,10 @@ Using script tag
 <script src="your_path/dist/easy-drawing-board.js"></script>
 ```
 
+## Live Example
+
+[live example](https://codepen.io/kaierchou/project/editor/AEepEK#)
+
 ## Usage
 ### init
 
