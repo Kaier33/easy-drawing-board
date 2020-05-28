@@ -51,7 +51,7 @@ draw.init();
 ### APIs
 
 | Method                | Arguments                                                | Description          |
-| :- | :-: | :-: | :- |
+| :-: | :- | :- |
 | config( type,val )    | tpye's enum(lineColor, lineWidth, arrowSize, canvasBgColor, textFontSize, textLineHeight, textColor)     | Modifying the default configuration |
 | setMode( mode )       | mode's enum(pencil, straightLine, rect, circle, arrow)   | Set current mode                              |
 | saveImg( [options] )  | default value { tpye: 'png', fileName: 'canvas_imgae' }  | Save the canvas as an image, and download.    |
