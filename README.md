@@ -21,7 +21,7 @@ Using script tag
 [live example](https://codepen.io/kaierchou/project/editor/AEepEK#)
 
 ## Usage
-### init
+### Initialize
 
 ```html
 <script type="text/javascript" src="//{you path to the dist file}/dist/sketch.js"></script>
