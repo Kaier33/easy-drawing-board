@@ -36,7 +36,6 @@ const options = {
 }
 // canvas's width/height equals container's width/height
 const draw = new EasyDrawingBoard(options); 
-draw.init();
 ```
 
 ### Options
