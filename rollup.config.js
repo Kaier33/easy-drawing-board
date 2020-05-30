@@ -13,7 +13,7 @@ export default {
     }
   ],
   plugins: [
-    // terser(),
+    terser(),
     resolve(),
     babel({ babelHelpers: 'bundled' }),
     postcss()

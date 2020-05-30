@@ -56,9 +56,9 @@ const draw = new EasyDrawingBoard(options);
 | Method                | Arguments                                                | Description          |
 | :-: | :- | :- |
 | config( type,val )    | tpye's enum(lineColor, lineWidth, arrowSize, canvasBgColor, textFontSize, textLineHeight, textColor)     | Modifying the default configuration |
-| setMode( mode )       | mode's enum(pencil, straightLine, rect, circle, arrow)   | Set current mode                              |
+| setMode( mode )       | mode's enum(pencil, straightLine, rect, circle, arrow, eraser)   | Set current mode                              |
 | saveImg( [options] )  | default value { tpye: 'png', fileName: 'canvas_imgae' }  | Save the canvas as an image, and download.    |
-| generateBase64([type])| default value "png"                                      | Generate Base64 data                          |
+| generateBase64([type])| default value "png"                                      | Generate Base64 data (return Promise)                        |
 | clear()               | /                                                        | Clear canvas                                  |
 
 #### example
@@ -70,21 +70,21 @@ const draw = new EasyDrawingBoard(options);
   const draw = new EasyDrawingBoard({container: container})
 
   // methods
-  draw.conifg('lineColor', '#FF1493')                   // Change the color of the brush.
-  draw.setMode('rect')                                  // Now you can draw the rectangle.
+  draw.conifg('lineColor', '#FF1493')                         // Change the color of the brush.
+  draw.setMode('rect')                                        // Now you can draw the rectangle.
 
-  draw.generateBase64()                                 // generateBase64 method default is to export the PNG base64 data.
-  draw.generateBase64('jpeg')                           // get smaller data.
+  draw.generateBase64().then(data => console.log(data))       // generateBase64 method default is to export the PNG base64 data.                              
+  draw.generateBase64('jpeg').then(data => console.log(data)) // get smaller data.                          
 
-  draw.saveImg()                                        // Save the canvas as an PNG images, and the file name is canvas_imgae.png.
-  draw.saveImg({fileName: '233.png'})                   // Just Change of file name.
-  draw.saveImg({tpye: 'jpeg', fileName: 'small.jpeg'})  // Sometimes we just need smaller pictures.
+  draw.saveImg()                                              // Save the canvas as an PNG images, and the file name is canvas_imgae.png.
+  draw.saveImg({fileName: '233.png'})                         // Just Change of file name.
+  draw.saveImg({tpye: 'jpeg', fileName: 'small.jpeg'})        // Sometimes we just need smaller pictures.
 ```
 
 
 ## Todo
 
-- [ ] eraser
+- [x] eraser
 - [ ] undo
 - [ ] typescript refactoring
 
