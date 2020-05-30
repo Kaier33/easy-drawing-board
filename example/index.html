@@ -50,6 +50,7 @@
     <div id="operations">
       <!-- id 关联到事件绑定 -->
       <button class="btn" id="clear">clear</button>
+      <button class="btn" id="eraser">橡皮擦</button>
       <button class="btn" id="pencil">铅笔</button>
       <button class="btn" id="straightLine">直线</button>
       <button class="btn" id="rect">矩形</button>
@@ -125,8 +126,12 @@
 
 
     function generateBase64() {
-      draw && console.log('1::', draw.generateBase64())
-      draw2 && console.log("2::", draw2.generateBase64())
+      draw.generateBase64().then(res => {
+        console.log('data1::', res)
+      })
+      draw2.generateBase64().then(res => {
+        console.log('data2::', res)
+      })
       alert('已输出至于 控制台')
     }
 

@@ -123,17 +123,17 @@ class Draw {
     }
   }
 
-  drawBackground() {
-    // 这里如果用 createEl去创建元素, F5刷新一下, 图片会从disk cache读取, 会导致后续canvs.toDataUrl报错
-    // 不过这样话, 后续的缓存是从 内存中取, 速度会快点
+  setBackground() {
     if (this.bgImg) {
-      const that = this
-      const img = new Image();
-      img.setAttribute('crossOrigin', 'anonymous');
-      img.src = this.bgImg;
-      img.onload = function() {
-        that.context.drawImage(this, 0, 0, that.canvasWidth, that.canvasHeight);
-      }
+      this.context.globalCompositeOperation = 'destination-out'
+      this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+      this.canvas.style.background = `url(${this.bgImg})`
+      this.canvas.style.backgroundSize = "100% 100%"
+      this.canvas.style.backgroundPosition = "center"
+      this.canvas.style.backgroundRepeat = 'no-repeat'
+
+      this.context.globalCompositeOperation = 'source-over'
     }
   }
 
@@ -187,6 +187,14 @@ class Draw {
           canvasWidth: this.canvasWidth,
           canvasHeight: this.canvasHeight
         });
+      },
+      eraser: (mousePosition) => {
+        const { x, y } = mousePosition;
+        this.bgImg ?  this.context.globalCompositeOperation = 'destination-out' : null;
+        this.context.strokeStyle = this.configuration.canvasBgColor;
+        this.context.fillStyle = this.configuration.canvasBgColor;
+        this.context.lineTo(x, y);
+        this.context.stroke();
       },
       clear: () => this.clear(),
     };
@@ -268,16 +276,61 @@ class Draw {
     (type === "textFontSize" || type === 'textColor' || type === 'textLineHeight') && this.createTextMeasure();
   }
   setMode(mode) {
+    this.context.globalCompositeOperation = 'source-over';
+    this.context.strokeStyle = this.configuration.lineColor;
+    this.context.fillStyle = this.configuration.lineColor;
     this.mode = mode;
   }
 
-  generateBase64(type = "png") {
-    return this.canvas.toDataURL(`image/${type}`);
+  // 对于有背景图的, 先画背景图, 再覆盖上 笔迹. 不然生成的数据只有笔迹, 因为toDataURL不会包含背景图的数据
+  getBase64Data(type) {
+    return new Promise((resolve, reject) => {
+      const that = this;
+      const _data = that.canvas.toDataURL(`image/${type}`);
+      const _canvasEl = Dom.createEl('canvas', {
+        styles: {  width: `${that.canvasWidth}px`, height: `${that.canvasHeight}px` },
+        attrs: { width: that.canvasWidth, height: that.canvasHeight }
+      });
+      const _context = _canvasEl.getContext("2d");
+      const img = new Image();
+      img.setAttribute('crossOrigin', 'anonymous');
+      img.src = that.bgImg;
+      img.onerror = () => reject('Image loading failed.');
+      img.onload = function() {
+        _context.drawImage(this, 0, 0, that.canvasWidth, that.canvasHeight);
+        const _img = new Image();
+        _img.setAttribute('crossOrigin', 'anonymous');
+        _img.src = _data;
+        _img.onerror = () => reject('Image loading failed.');
+        _img.onload = function() {
+          _context.drawImage(this, 0, 0, that.canvasWidth, that.canvasHeight);
+          resolve(_canvasEl.toDataURL(`image/${type}`));
+        }
+      }; 
+    })
   }
 
-  saveImg(options = {type: 'png', fileName: 'canvas_image'}) {
+  generateBase64(type = "png") {
+    return new Promise(async (resolve) => {     
+      if (this.bgImg) {
+        const data = await this.getBase64Data(type)
+        resolve(data)
+      } else {
+        resolve (this.canvas.toDataURL(`image/${type}`));
+      }
+    })
+  }
+
+  async saveImg(options = {type: 'png', fileName: 'canvas_image'}) {
+    let imgData = null
+    if (this.bgImg) {
+      imgData = await this.getBase64Data(options.type);
+    } else {  
+      imgData = this.canvas.toDataURL(`image/${options.type}`);
+    }
     const aEl = Dom.createEl('a', { attrs: {
       href: this.canvas.toDataURL(`image/${options.type}`),
+      href: imgData,
       download: `${options.fileName}.${options.type}`}
     });
     aEl.click();
@@ -286,14 +339,13 @@ class Draw {
   clear() {
     this.context.fillStyle = this.configuration.canvasBgColor;
     this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-    this.drawBackground();
+    this.setBackground();
   }
 }
 
 export default Draw;
 
 // todo:
-// 撤回操作. (顶多10步)
-// 橡皮檫.
+// 撤回操作. (顶多20步)
 // 事件抽象.
 // ts重构.
