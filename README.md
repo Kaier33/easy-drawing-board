@@ -59,7 +59,7 @@ const draw = new EasyDrawingBoard(options);
 | config( type,val )    | tpye's enum(lineColor, lineWidth, arrowSize, eraserSize, canvasBgColor, textFontSize, textLineHeight, textColor)     | Modifying the default configuration |
 | setMode( mode )       | mode's enum(pencil, straightLine, rect, circle, arrow, eraser)   | Set current mode                              |
 | saveImg( [options] )  | default value { tpye: 'png', fileName: 'canvas_imgae' }  | Save the canvas as an image, and download.    |
-| generateBase64([type])| default value "png"                                      | Generate Base64 data (return Promise)                        |
+| generateBase64([type])| default value "png"                                      | Generate Base64 data                          |
 | clear()               | /                                                        | Clear canvas                                  |
 
 #### example
