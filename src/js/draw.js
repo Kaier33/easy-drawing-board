@@ -45,7 +45,7 @@ class Draw {
     let originX, originY = null; // 鼠标的坐标 (屏幕坐标 + 容器偏移量)
     const { x: c_offsetLeft, y: c_offsetTop } = this.canvas.getBoundingClientRect();
     this.clear();
-
+    this.setBackground();
     this.canvas.addEventListener("mousedown", (event) => {
       this.isDrawing = true;
       this.image.src = this.canvas.toDataURL("image/png");
@@ -128,12 +128,10 @@ class Draw {
     if (this.bgImg) {
       this.context.globalCompositeOperation = 'destination-out'
       this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-
       this.canvas.style.background = `url(${this.bgImg})`
       this.canvas.style.backgroundSize = "100% 100%"
       this.canvas.style.backgroundPosition = "center"
       this.canvas.style.backgroundRepeat = 'no-repeat'
-
       this.context.globalCompositeOperation = 'source-over'
     }
   }
@@ -343,7 +341,11 @@ class Draw {
   clear() {
     this.context.fillStyle = this.configuration.canvasBgColor;
     this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-    this.setBackground();
+    if (this.bgImg) {
+      this.context.globalCompositeOperation = 'destination-out';
+      this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+      this.context.globalCompositeOperation = 'source-over'
+    }
   }
 }
 

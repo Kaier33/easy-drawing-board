@@ -1,1 +1,1510 @@
-!function(t,e){"object"==typeof exports&&"undefined"!=typeof module?module.exports=e(require("core-js/modules/es.array.concat"),require("core-js/modules/es.array.map"),require("core-js/modules/es.object.to-string"),require("core-js/modules/es.promise"),require("core-js/modules/es.regexp.exec"),require("core-js/modules/es.string.replace"),require("core-js/modules/es.string.split"),require("core-js/modules/es.array.fill"),require("core-js/modules/es.object.keys")):"function"==typeof define&&define.amd?define(["core-js/modules/es.array.concat","core-js/modules/es.array.map","core-js/modules/es.object.to-string","core-js/modules/es.promise","core-js/modules/es.regexp.exec","core-js/modules/es.string.replace","core-js/modules/es.string.split","core-js/modules/es.array.fill","core-js/modules/es.object.keys"],e):(t=t||self).EasyDrawingBoard=e()}(this,(function(){"use strict";function t(t,e,n,r,o,i,a){try{var s=t[i](a),c=s.value}catch(t){return void n(t)}s.done?e(c):Promise.resolve(c).then(r,o)}function e(e){return function(){var n=this,r=arguments;return new Promise((function(o,i){var a=e.apply(n,r);function s(e){t(a,o,i,s,c,"next",e)}function c(e){t(a,o,i,s,c,"throw",e)}s(void 0)}))}}function n(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function r(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}function o(t,e,n){return e&&r(t.prototype,e),n&&r(t,n),t}function i(t,e,n){return e in t?Object.defineProperty(t,e,{value:n,enumerable:!0,configurable:!0,writable:!0}):t[e]=n,t}!function(t,e){void 0===e&&(e={});var n=e.insertAt;if(t&&"undefined"!=typeof document){var r=document.head||document.getElementsByTagName("head")[0],o=document.createElement("style");o.type="text/css","top"===n&&r.firstChild?r.insertBefore(o,r.firstChild):r.appendChild(o),o.styleSheet?o.styleSheet.cssText=t:o.appendChild(document.createTextNode(t))}}('.__edb-textarea-box {\n  position: absolute;\n  z-index: 101;\n  width: auto;\n  overflow-y: hidden;\n  overflow-x: hidden;\n  word-wrap: break-word;\n  word-break: break-all;\n  color: #aaa;\n  border: 1px dashed gray;\n}\n.__edb-textarea-box .__edb-textarea {\n  resize: none;\n  background: transparent;\n  border: none;\n  padding: 1px;\n  outline: none;\n  font-family: "PingFang SC", "Microsoft YaHei", "微软雅黑";\n  overflow: hidden;\n}\n.__edb-text-pre {\n  position: absolute;\n  z-index: 999;\n  top: 0;\n  left: -9999px;\n  min-width: 100px;\n  display: inline-block;\n  padding: 1px;\n  border: 1px solid red;\n  font-family: "PingFang SC", "Microsoft YaHei", "微软雅黑";\n}\n.__edb-eraser-hover {\n  cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEm0lEQVRYR62XbUxbVRjH/7cUxlrWQW9fBmNsDGROwG1B6C1my5ahERcTTSRMcXIH6NwSv6gxmckMaPywxCXGQTdfMpuMwdiLbI5Fs7HhNCIGlNCOwTbGW3kr76hbJkKPuRdb29tyewDvlyb3Pvf8fs9znnN6LoP/6So0a7QEYdVKKJZNE5fV2jB6nGZohiYoWEzxdii7H7J/b9QYZiKUYcrG8T4ApMTaMF4c7N0lC7yeFqOaDv3rfpYxEVmGBJFnnxrCqd4WKoklCfCbIyMRHjLhDRcEbFNDqBAFhEu+EosW2JNpNIS4ZpxZxgRkGRI9lW6ZHESlw4YDuaniPUuVXVZiUQJ5Jm1sKMM4pPDmyQFUOewiPD3ZKAo0tjplJRYsUJSxMn5GoeyUwn+bGMCZPl+4uyxyEgsSKHhSt8E1S9qlc9400Y9zfTd9Mpd2v5dEsbVhvMT9nFqAN0elgihs0syFJXe+v1UWLlcJKoF8ky6NYUiTNPNfxh2o7r9FBRckmlqHYTljAyH/rY6gArxJy4FhfpZm3jDmwIUBevivbcNiMyavMGK9OgoXB9pACLNPViA/U7+NcbluSOH1Y734ZqCNOvPm9hERvjHCgLy4TeKM1A53oM7Z1TKvQAHHZrmAq1L4T6M9uDTYTg1vuT0qwjeo9R64W+C6szOwAG/SPwvGdVkK/3G0G5cHb1PDbXfHYDltQ5LKH17rvBd4CvgM9nkoUC2F3xjpwrdDd6jhNzsEuB2Jy3V+mQtwgIjL0WcKeE63HSB1Uvj3I134bgHwW53jKKu0IyGclcDvodbZ4bM1BxW4PtyJK8671Jm3d02grNKG+GXB4UIv+Ajk5CAkamTNpemHD7KFKjBgcNXZQQ2/0zOJsgob1oZpZcvuvUt6BPJMWo06XHUhNjElzZS9W1P58dtinPcfi9zhoqN3EqUVdsSFRs1Xdp8t2GcrfiVNFx2uDvs6em1SSmHJlxFh4SrY669AkOAeX4V9L6bIHmw6+6ZEeGxIJHXmHoFCsz4RIcpz+tXrHuEPHVNptAYPzC2xdUsMCl54LKBEV//vKK2wYbVCCvdvuEADMEXbYuojdas27zl4dPnFzz6E6ZndSM182k9iR3osXn3uUZ8xegb/QOkpG6KZlfNlHvRcyOw1a98nhCnZmbtfHPxa1TG89M6RgBJPmePwcnaSGOcY+lOEG6FZNNyzCniOfQ/AR3MSDK5VWeaV2LV1HcybVuFouR0GsiLoOpdtHu9lmM+x7zLAYe9KFH1wAutT0v2mI0avBju9dLjfPsBz2rcA5oi7EvHJT/gICC+4G3NLZAxy18wdPGuH6RouYBNKb/Ic+yaAT3fmHoAg8sWhAvE3UCUy2TiolKH4d28P2nBUAkLQXo7dTwCLICFc0kqc/eQgaf6hxmsXpfsKohYQAnlO9xpAPndXwv1ytaWYNNaeZ0AUu6CYVYMgmeYTbL5mlD0R8RzLA/jKLVFz4rCrvqZcAQUyrPVjjcE6nOZ50DNhPqfLY0DKd+S84ao7e1wBzMZbGya7aQaniQkqMNcT2lwC5vTsA2XESZvzPs3AtDH/ANJxaF2ajW5TAAAAAElFTkSuQmCC") 0 32, auto;\n}\n');var a=function(t){var e=Object.prototype,n=e.hasOwnProperty,r="function"==typeof Symbol?Symbol:{},o=r.iterator||"@@iterator",i=r.asyncIterator||"@@asyncIterator",a=r.toStringTag||"@@toStringTag";function s(t,e,n,r){var o=e&&e.prototype instanceof u?e:u,i=Object.create(o.prototype),a=new E(r||[]);return i._invoke=function(t,e,n){var r="suspendedStart";return function(o,i){if("executing"===r)throw new Error("Generator is already running");if("completed"===r){if("throw"===o)throw i;return k()}for(n.method=o,n.arg=i;;){var a=n.delegate;if(a){var s=m(a,n);if(s){if(s===l)continue;return s}}if("next"===n.method)n.sent=n._sent=n.arg;else if("throw"===n.method){if("suspendedStart"===r)throw r="completed",n.arg;n.dispatchException(n.arg)}else"return"===n.method&&n.abrupt("return",n.arg);r="executing";var u=c(t,e,n);if("normal"===u.type){if(r=n.done?"completed":"suspendedYield",u.arg===l)continue;return{value:u.arg,done:n.done}}"throw"===u.type&&(r="completed",n.method="throw",n.arg=u.arg)}}}(t,n,a),i}function c(t,e,n){try{return{type:"normal",arg:t.call(e,n)}}catch(t){return{type:"throw",arg:t}}}t.wrap=s;var l={};function u(){}function h(){}function d(){}var f={};f[o]=function(){return this};var v=Object.getPrototypeOf,g=v&&v(v(C([])));g&&g!==e&&n.call(g,o)&&(f=g);var p=d.prototype=u.prototype=Object.create(f);function y(t){["next","throw","return"].forEach((function(e){t[e]=function(t){return this._invoke(e,t)}}))}function x(t,e){var r;this._invoke=function(o,i){function a(){return new e((function(r,a){!function r(o,i,a,s){var l=c(t[o],t,i);if("throw"!==l.type){var u=l.arg,h=u.value;return h&&"object"==typeof h&&n.call(h,"__await")?e.resolve(h.__await).then((function(t){r("next",t,a,s)}),(function(t){r("throw",t,a,s)})):e.resolve(h).then((function(t){u.value=t,a(u)}),(function(t){return r("throw",t,a,s)}))}s(l.arg)}(o,i,r,a)}))}return r=r?r.then(a,a):a()}}function m(t,e){var n=t.iterator[e.method];if(void 0===n){if(e.delegate=null,"throw"===e.method){if(t.iterator.return&&(e.method="return",e.arg=void 0,m(t,e),"throw"===e.method))return l;e.method="throw",e.arg=new TypeError("The iterator does not provide a 'throw' method")}return l}var r=c(n,t.iterator,e.arg);if("throw"===r.type)return e.method="throw",e.arg=r.arg,e.delegate=null,l;var o=r.arg;return o?o.done?(e[t.resultName]=o.value,e.next=t.nextLoc,"return"!==e.method&&(e.method="next",e.arg=void 0),e.delegate=null,l):o:(e.method="throw",e.arg=new TypeError("iterator result is not an object"),e.delegate=null,l)}function w(t){var e={tryLoc:t[0]};1 in t&&(e.catchLoc=t[1]),2 in t&&(e.finallyLoc=t[2],e.afterLoc=t[3]),this.tryEntries.push(e)}function b(t){var e=t.completion||{};e.type="normal",delete e.arg,t.completion=e}function E(t){this.tryEntries=[{tryLoc:"root"}],t.forEach(w,this),this.reset(!0)}function C(t){if(t){var e=t[o];if(e)return e.call(t);if("function"==typeof t.next)return t;if(!isNaN(t.length)){var r=-1,i=function e(){for(;++r<t.length;)if(n.call(t,r))return e.value=t[r],e.done=!1,e;return e.value=void 0,e.done=!0,e};return i.next=i}}return{next:k}}function k(){return{value:void 0,done:!0}}return h.prototype=p.constructor=d,d.constructor=h,d[a]=h.displayName="GeneratorFunction",t.isGeneratorFunction=function(t){var e="function"==typeof t&&t.constructor;return!!e&&(e===h||"GeneratorFunction"===(e.displayName||e.name))},t.mark=function(t){return Object.setPrototypeOf?Object.setPrototypeOf(t,d):(t.__proto__=d,a in t||(t[a]="GeneratorFunction")),t.prototype=Object.create(p),t},t.awrap=function(t){return{__await:t}},y(x.prototype),x.prototype[i]=function(){return this},t.AsyncIterator=x,t.async=function(e,n,r,o,i){void 0===i&&(i=Promise);var a=new x(s(e,n,r,o),i);return t.isGeneratorFunction(n)?a:a.next().then((function(t){return t.done?t.value:a.next()}))},y(p),p[a]="Generator",p[o]=function(){return this},p.toString=function(){return"[object Generator]"},t.keys=function(t){var e=[];for(var n in t)e.push(n);return e.reverse(),function n(){for(;e.length;){var r=e.pop();if(r in t)return n.value=r,n.done=!1,n}return n.done=!0,n}},t.values=C,E.prototype={constructor:E,reset:function(t){if(this.prev=0,this.next=0,this.sent=this._sent=void 0,this.done=!1,this.delegate=null,this.method="next",this.arg=void 0,this.tryEntries.forEach(b),!t)for(var e in this)"t"===e.charAt(0)&&n.call(this,e)&&!isNaN(+e.slice(1))&&(this[e]=void 0)},stop:function(){this.done=!0;var t=this.tryEntries[0].completion;if("throw"===t.type)throw t.arg;return this.rval},dispatchException:function(t){if(this.done)throw t;var e=this;function r(n,r){return a.type="throw",a.arg=t,e.next=n,r&&(e.method="next",e.arg=void 0),!!r}for(var o=this.tryEntries.length-1;o>=0;--o){var i=this.tryEntries[o],a=i.completion;if("root"===i.tryLoc)return r("end");if(i.tryLoc<=this.prev){var s=n.call(i,"catchLoc"),c=n.call(i,"finallyLoc");if(s&&c){if(this.prev<i.catchLoc)return r(i.catchLoc,!0);if(this.prev<i.finallyLoc)return r(i.finallyLoc)}else if(s){if(this.prev<i.catchLoc)return r(i.catchLoc,!0)}else{if(!c)throw new Error("try statement without catch or finally");if(this.prev<i.finallyLoc)return r(i.finallyLoc)}}}},abrupt:function(t,e){for(var r=this.tryEntries.length-1;r>=0;--r){var o=this.tryEntries[r];if(o.tryLoc<=this.prev&&n.call(o,"finallyLoc")&&this.prev<o.finallyLoc){var i=o;break}}i&&("break"===t||"continue"===t)&&i.tryLoc<=e&&e<=i.finallyLoc&&(i=null);var a=i?i.completion:{};return a.type=t,a.arg=e,i?(this.method="next",this.next=i.finallyLoc,l):this.complete(a)},complete:function(t,e){if("throw"===t.type)throw t.arg;return"break"===t.type||"continue"===t.type?this.next=t.arg:"return"===t.type?(this.rval=this.arg=t.arg,this.method="return",this.next="end"):"normal"===t.type&&e&&(this.next=e),l},finish:function(t){for(var e=this.tryEntries.length-1;e>=0;--e){var n=this.tryEntries[e];if(n.finallyLoc===t)return this.complete(n.completion,n.afterLoc),b(n),l}},catch:function(t){for(var e=this.tryEntries.length-1;e>=0;--e){var n=this.tryEntries[e];if(n.tryLoc===t){var r=n.completion;if("throw"===r.type){var o=r.arg;b(n)}return o}}throw new Error("illegal catch attempt")},delegateYield:function(t,e,n){return this.delegate={iterator:C(t),resultName:e,nextLoc:n},"next"===this.method&&(this.arg=void 0),l}},t}("object"==typeof module?module.exports:{});try{regeneratorRuntime=a}catch(t){Function("r","regeneratorRuntime = r")(a)}function s(t,e){var n=e.canvasWidth,r=e.canvasHeight,o=e.arrowSize;t.save(),t.beginPath(),t.moveTo(e.points[0].x*n,e.points[0].y*r);for(var i=function(t,e,n,r){!function(t,e){t.beginPath(),t.moveTo(e[0].x,e[0].y);for(var n=1;n<e.length;n++)t.lineTo(e[n].x,e[n].y);t.closePath(),t.fill()}(t,function(t,e,n){var r=Math.atan2(e.y-t.y,e.x-t.x),o=n/3*2,i={x:e.x-Math.round(n*Math.cos(r+.6)),y:e.y-Math.round(n*Math.sin(r+.6))},a={x:e.x-Math.round(n*Math.cos(r-.6)),y:e.y-Math.round(n*Math.sin(r-.6))},s={x:e.x-Math.round(o*Math.cos(r+.3)),y:e.y-Math.round(o*Math.sin(r+.3))};return[t,{x:e.x-Math.round(o*Math.cos(r-.3)),y:e.y-Math.round(o*Math.sin(r-.3))},a,e,i,s]}(n,e,r))},a=1;a<e.points.length;a++)i(t,{x:e.points[a].x*n,y:e.points[a].y*r},{x:e.points[a-1].x*n,y:e.points[a-1].y*r},o);t.restore()}var c=function(){function t(){n(this,t)}return o(t,null,[{key:"createEl",value:function(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"div",e=arguments.length>1?arguments[1]:void 0,n=e.styles,r=void 0===n?{}:n,o=e.attrs,i=void 0===o?{}:o,a=e.props,s=void 0===a?{}:a,c=document.createElement(t);return Object.keys(r).map((function(t){c.style[t]=r[t]})),Object.keys(i).map((function(t){c.setAttribute(t,i[t])})),Object.keys(s).map((function(t){c[t]=s[t]})),c}},{key:"hasClass",value:function(t,e){return t.classList.contains(e)}},{key:"addClass",value:function(t,e){t.classList.add(e)}},{key:"removeClass",value:function(t,e){t.classList.remove(e)}},{key:"setAttr",value:function(t,e,n){t.setAttribute(e,n)}},{key:"delAttr",value:function(t,e){t.removeAttribute(e)}},{key:"appendChild",value:function(t,e){t.appendChild(e)}},{key:"removeChild",value:function(t,e){t.removeChild(e)}}]),t}();return function(){function t(e){n(this,t);var r=e.container,o=e.bgImg,i=void 0===o?"":o,a=e.lineColor,s=void 0===a?"#f00":a,c=e.lineWidth,l=void 0===c?"1":c,u=e.arrowSize,h=void 0===u?15:u,d=e.eraserSize,f=void 0===d?10:d,v=e.canvasBgColor,g=void 0===v?"#fff":v,p=e.textFontSize,y=void 0===p?16:p,x=e.textLineHeight,m=void 0===x?20:x,w=e.textColor,b=void 0===w?"#f00":w;if(!r)throw Error("No container element were found...");this.container=r,this.canvas=this.createCanvasEl(r),this.context=this.canvas.getContext("2d"),this.mode="pencil",this.canvasWidth=this.canvas.width,this.canvasHeight=this.canvas.height,this.configuration={lineColor:s,lineWidth:l,arrowSize:h,eraserSize:f,canvasBgColor:g,textFontSize:y,textLineHeight:m,textColor:b},this.arrowPoints=[],this.isDrawing=!1,this.image=new Image,this.bgImg=i,this.textareaEl=null,this.measureEl=null,this.createTextMeasure(),this.init()}var r;return o(t,[{key:"createCanvasEl",value:function(t){var e=c.createEl("canvas",{styles:{height:"".concat(t.clientHeight,"px"),width:"".concat(t.clientWidth,"px")},attrs:{width:t.clientHeight,height:t.clientWidth}});return c.appendChild(t,e),e}},{key:"init",value:function(){var t,e=this,n=null,r=this.canvas.getBoundingClientRect(),o=r.x,i=r.y;this.clear(),this.canvas.addEventListener("mousedown",(function(r){e.isDrawing=!0,e.image.src=e.canvas.toDataURL("image/png");var a=r.clientX,s=r.clientY,c=t=a-o,l=n=s-i;e.context.moveTo(t,n),e.context.lineWidth=e.configuration.lineWidth,e.context.strokeStyle=e.configuration.lineColor,e.context.fillStyle=e.configuration.lineColor,e.context.beginPath(),"arrow"===e.mode&&e.saveArrowPoint({x:t,y:n}),"text"===e.mode&&e.createTextArea({x:c,y:l})})),this.canvas.addEventListener("mousemove",(function(r){if(e.isDrawing){var a=r.clientX,s=r.clientY,c=a-o,l=s-i,u=t,h=n,d=Math.abs(c-t),f=Math.abs(l-n);c<t&&(u=c),l<n&&(h=l);var v={x:c,y:l,originX:t,originY:n,newOriginX:u,newOriginY:h,distanceX:d,distanceY:f},g=e.handleMousemove()[e.mode];g&&g(v)}})),this.canvas.addEventListener("mouseup",(function(){return e.endOfDrawing()})),this.canvas.addEventListener("mouseleave",(function(){return e.endOfDrawing()}))}},{key:"reDraw",value:function(){this.context.clearRect(0,0,this.canvasWidth,this.canvasHeight),this.context.drawImage(this.image,0,0),this.context.beginPath()}},{key:"endOfDrawing",value:function(){this.isDrawing&&(this.context.closePath(),this.isDrawing=!1)}},{key:"setBackground",value:function(){this.bgImg&&(this.context.globalCompositeOperation="destination-out",this.context.fillRect(0,0,this.canvasWidth,this.canvasHeight),this.canvas.style.background="url(".concat(this.bgImg,")"),this.canvas.style.backgroundSize="100% 100%",this.canvas.style.backgroundPosition="center",this.canvas.style.backgroundRepeat="no-repeat",this.context.globalCompositeOperation="source-over")}},{key:"handleMousemove",value:function(){var t=this;return{pencil:function(e){var n=e.x,r=e.y;t.context.lineTo(n,r),t.context.stroke()},straightLine:function(e){var n=e.x,r=e.y,o=e.originX,i=e.originY;t.reDraw(),t.context.moveTo(o,i),t.context.lineTo(n,r),t.context.stroke()},rect:function(e){var n=e.newOriginX,r=e.newOriginY,o=e.distanceX,i=e.distanceY;t.reDraw(),t.context.rect(n,r,o,i),t.context.stroke(),t.context.closePath()},circle:function(e){var n=e.newOriginX,r=e.newOriginY,o=e.distanceX,i=e.distanceY;t.reDraw();var a=Math.sqrt(o*o+i*i);t.context.arc(n+o,r+i,a,0,2*Math.PI),t.context.stroke()},arrow:function(e){var n=e.x,r=e.y;t.reDraw(),t.arrowPoints[1]={x:n/t.canvasWidth,y:r/t.canvasHeight},s(t.context,{points:t.arrowPoints,arrowSize:t.configuration.arrowSize,canvasWidth:t.canvasWidth,canvasHeight:t.canvasHeight})},eraser:function(e){var n=e.x,r=e.y;t.bgImg&&(t.context.globalCompositeOperation="destination-out"),t.context.strokeStyle=t.configuration.canvasBgColor,t.context.fillStyle=t.configuration.canvasBgColor,t.context.lineWidth=t.configuration.eraserSize,t.context.lineTo(n,r),t.context.stroke()},clear:function(){return t.clear()}}}},{key:"saveArrowPoint",value:function(t){this.arrowPoints=[],this.arrowPoints.push({x:t.x/this.canvasWidth,y:t.y/this.canvasHeight})}},{key:"createTextMeasure",value:function(){this.measureEl&&(c.removeChild(this.container,this.measureEl),this.measureEl=null),this.measureEl=c.createEl("pre",{styles:{fontSize:"".concat(this.configuration.textFontSize,"px"),lineHeight:"".concat(this.configuration.textLineHeight,"px"),color:this.configuration.textColor}}),c.addClass(this.measureEl,"__edb-text-pre"),c.appendChild(this.container,this.measureEl)}},{key:"drawText",value:function(t,e){var n=this;e.font=e.font||'"PingFang SC","Microsoft YaHei","微软雅黑"';var r=e.text;t.save(),t.textBaseline="middle",t.font="".concat(this.configuration.textFontSize,"px/").concat(this.configuration.textLineHeight,"px ").concat(e.font),t.fillStyle=this.configuration.textColor,t.globalCompositeOperation="source-over",r.replace(/<br>/g,"\n").split(/\n/).map((function(r,o){t.fillText(r,e.position.x+2,e.position.y+o*n.configuration.textLineHeight+n.configuration.textLineHeight/2+2)})),t.restore()}},{key:"createTextArea",value:function(t){var e=this;this.mode=null,this.boxDom=c.createEl("div",{styles:{left:"".concat(t.x,"px"),top:"".concat(t.y,"px"),lineHeight:"".concat(this.configuration.textLineHeight,"px"),fontSize:"".concat(this.configuration.textFontSize,"px")}}),c.addClass(this.boxDom,"__edb-textarea-box"),this.textareaEl=c.createEl("textarea",{styles:{lineHeight:"".concat(this.configuration.textLineHeight,"px"),color:this.configuration.textColor,fontSize:"".concat(this.configuration.textFontSize,"px")},props:{placeholder:"请点击输入",autofocus:!0}}),c.addClass(this.textareaEl,"__edb-textarea"),c.appendChild(this.boxDom,this.textareaEl),c.appendChild(this.container,this.boxDom),this.textareaEl.onblur=function(){e.mode=null,c.delAttr(e.textareaEl,"autofocus"),e.drawText(e.context,{text:e.textareaEl.value,position:t}),c.removeChild(e.container,e.boxDom)},this.textareaEl.addEventListener("input",(function(t){e.measureEl.innerHTML=t.target.value+" ",e.textareaEl.style.width=e.measureEl.clientWidth+"px",e.textareaEl.style.height=e.measureEl.clientHeight+"px"}))}},{key:"config",value:function(t,e){this.configuration[t]=e,"canvasBgColor"===t&&this.clear(),("textFontSize"===t||"textColor"===t||"textLineHeight"===t)&&this.createTextMeasure()}},{key:"setMode",value:function(t){this.context.globalCompositeOperation="source-over",this.context.strokeStyle=this.configuration.lineColor,this.context.fillStyle=this.configuration.lineColor,this.context.lineWidth=this.configuration.lineWidth,"eraser"===t?c.addClass(this.container,"__edb-eraser-hover"):c.removeClass(this.container,"__edb-eraser-hover"),this.mode=t}},{key:"getBase64Data",value:function(t){var e=this;return new Promise((function(n,r){var o=e,i=o.canvas.toDataURL("image/".concat(t)),a=c.createEl("canvas",{styles:{width:"".concat(o.canvasWidth,"px"),height:"".concat(o.canvasHeight,"px")},attrs:{width:o.canvasWidth,height:o.canvasHeight}}),s=a.getContext("2d"),l=new Image;l.setAttribute("crossOrigin","anonymous"),l.src=o.bgImg,l.onerror=function(){return r("Image loading failed.")},l.onload=function(){s.drawImage(this,0,0,o.canvasWidth,o.canvasHeight);var e=new Image;e.setAttribute("crossOrigin","anonymous"),e.src=i,e.onerror=function(){return r("Image loading failed.")},e.onload=function(){s.drawImage(this,0,0,o.canvasWidth,o.canvasHeight),n(a.toDataURL("image/".concat(t)))}}}))}},{key:"generateBase64",value:function(){var t=this,n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"png";return new Promise(function(){var r=e(regeneratorRuntime.mark((function e(r){var o;return regeneratorRuntime.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:if(!t.bgImg){e.next=7;break}return e.next=3,t.getBase64Data(n);case 3:o=e.sent,r(o),e.next=8;break;case 7:r(t.canvas.toDataURL("image/".concat(n)));case 8:case"end":return e.stop()}}),e)})));return function(t){return r.apply(this,arguments)}}())}},{key:"saveImg",value:(r=e(regeneratorRuntime.mark((function t(){var e,n,r,o=arguments;return regeneratorRuntime.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:if(n=o.length>0&&void 0!==o[0]?o[0]:{type:"png",fileName:"canvas_image"},r=null,!this.bgImg){t.next=8;break}return t.next=5,this.getBase64Data(n.type);case 5:r=t.sent,t.next=9;break;case 8:r=this.canvas.toDataURL("image/".concat(n.type));case 9:c.createEl("a",{attrs:(e={href:this.canvas.toDataURL("image/".concat(n.type))},i(e,"href",r),i(e,"download","".concat(n.fileName,".").concat(n.type)),e)}).click();case 11:case"end":return t.stop()}}),t,this)}))),function(){return r.apply(this,arguments)})},{key:"clear",value:function(){this.context.fillStyle=this.configuration.canvasBgColor,this.context.fillRect(0,0,this.canvasWidth,this.canvasHeight),this.setBackground()}}]),t}()}));
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('core-js/modules/es.array.concat'), require('core-js/modules/es.array.map'), require('core-js/modules/es.object.to-string'), require('core-js/modules/es.promise'), require('core-js/modules/es.regexp.exec'), require('core-js/modules/es.string.replace'), require('core-js/modules/es.string.split'), require('core-js/modules/es.array.fill'), require('core-js/modules/es.object.keys')) :
+  typeof define === 'function' && define.amd ? define(['core-js/modules/es.array.concat', 'core-js/modules/es.array.map', 'core-js/modules/es.object.to-string', 'core-js/modules/es.promise', 'core-js/modules/es.regexp.exec', 'core-js/modules/es.string.replace', 'core-js/modules/es.string.split', 'core-js/modules/es.array.fill', 'core-js/modules/es.object.keys'], factory) :
+  (global = global || self, global.EasyDrawingBoard = factory());
+}(this, (function () { 'use strict';
+
+  function styleInject(css, ref) {
+    if (ref === void 0) ref = {};
+    var insertAt = ref.insertAt;
+
+    if (!css || typeof document === 'undefined') {
+      return;
+    }
+
+    var head = document.head || document.getElementsByTagName('head')[0];
+    var style = document.createElement('style');
+    style.type = 'text/css';
+
+    if (insertAt === 'top') {
+      if (head.firstChild) {
+        head.insertBefore(style, head.firstChild);
+      } else {
+        head.appendChild(style);
+      }
+    } else {
+      head.appendChild(style);
+    }
+
+    if (style.styleSheet) {
+      style.styleSheet.cssText = css;
+    } else {
+      style.appendChild(document.createTextNode(css));
+    }
+  }
+
+  var css_248z = ".__edb-textarea-box {\n  position: absolute;\n  z-index: 101;\n  width: auto;\n  overflow-y: hidden;\n  overflow-x: hidden;\n  word-wrap: break-word;\n  word-break: break-all;\n  color: #aaa;\n  border: 1px dashed gray;\n}\n.__edb-textarea-box .__edb-textarea {\n  resize: none;\n  background: transparent;\n  border: none;\n  padding: 1px;\n  outline: none;\n  font-family: \"PingFang SC\", \"Microsoft YaHei\", \"微软雅黑\";\n  overflow: hidden;\n}\n.__edb-text-pre {\n  position: absolute;\n  z-index: 999;\n  top: 0;\n  left: -9999px;\n  min-width: 100px;\n  display: inline-block;\n  padding: 1px;\n  border: 1px solid red;\n  font-family: \"PingFang SC\", \"Microsoft YaHei\", \"微软雅黑\";\n}\n.__edb-eraser-hover {\n  cursor: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEm0lEQVRYR62XbUxbVRjH/7cUxlrWQW9fBmNsDGROwG1B6C1my5ahERcTTSRMcXIH6NwSv6gxmckMaPywxCXGQTdfMpuMwdiLbI5Fs7HhNCIGlNCOwTbGW3kr76hbJkKPuRdb29tyewDvlyb3Pvf8fs9znnN6LoP/6So0a7QEYdVKKJZNE5fV2jB6nGZohiYoWEzxdii7H7J/b9QYZiKUYcrG8T4ApMTaMF4c7N0lC7yeFqOaDv3rfpYxEVmGBJFnnxrCqd4WKoklCfCbIyMRHjLhDRcEbFNDqBAFhEu+EosW2JNpNIS4ZpxZxgRkGRI9lW6ZHESlw4YDuaniPUuVXVZiUQJ5Jm1sKMM4pPDmyQFUOewiPD3ZKAo0tjplJRYsUJSxMn5GoeyUwn+bGMCZPl+4uyxyEgsSKHhSt8E1S9qlc9400Y9zfTd9Mpd2v5dEsbVhvMT9nFqAN0elgihs0syFJXe+v1UWLlcJKoF8ky6NYUiTNPNfxh2o7r9FBRckmlqHYTljAyH/rY6gArxJy4FhfpZm3jDmwIUBevivbcNiMyavMGK9OgoXB9pACLNPViA/U7+NcbluSOH1Y734ZqCNOvPm9hERvjHCgLy4TeKM1A53oM7Z1TKvQAHHZrmAq1L4T6M9uDTYTg1vuT0qwjeo9R64W+C6szOwAG/SPwvGdVkK/3G0G5cHb1PDbXfHYDltQ5LKH17rvBd4CvgM9nkoUC2F3xjpwrdDd6jhNzsEuB2Jy3V+mQtwgIjL0WcKeE63HSB1Uvj3I134bgHwW53jKKu0IyGclcDvodbZ4bM1BxW4PtyJK8671Jm3d02grNKG+GXB4UIv+Ajk5CAkamTNpemHD7KFKjBgcNXZQQ2/0zOJsgob1oZpZcvuvUt6BPJMWo06XHUhNjElzZS9W1P58dtinPcfi9zhoqN3EqUVdsSFRs1Xdp8t2GcrfiVNFx2uDvs6em1SSmHJlxFh4SrY669AkOAeX4V9L6bIHmw6+6ZEeGxIJHXmHoFCsz4RIcpz+tXrHuEPHVNptAYPzC2xdUsMCl54LKBEV//vKK2wYbVCCvdvuEADMEXbYuojdas27zl4dPnFzz6E6ZndSM182k9iR3osXn3uUZ8xegb/QOkpG6KZlfNlHvRcyOw1a98nhCnZmbtfHPxa1TG89M6RgBJPmePwcnaSGOcY+lOEG6FZNNyzCniOfQ/AR3MSDK5VWeaV2LV1HcybVuFouR0GsiLoOpdtHu9lmM+x7zLAYe9KFH1wAutT0v2mI0avBju9dLjfPsBz2rcA5oi7EvHJT/gICC+4G3NLZAxy18wdPGuH6RouYBNKb/Ic+yaAT3fmHoAg8sWhAvE3UCUy2TiolKH4d28P2nBUAkLQXo7dTwCLICFc0kqc/eQgaf6hxmsXpfsKohYQAnlO9xpAPndXwv1ytaWYNNaeZ0AUu6CYVYMgmeYTbL5mlD0R8RzLA/jKLVFz4rCrvqZcAQUyrPVjjcE6nOZ50DNhPqfLY0DKd+S84ao7e1wBzMZbGya7aQaniQkqMNcT2lwC5vTsA2XESZvzPs3AtDH/ANJxaF2ajW5TAAAAAElFTkSuQmCC\") 0 32, auto;\n}\n";
+  styleInject(css_248z);
+
+  function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+    try {
+      var info = gen[key](arg);
+      var value = info.value;
+    } catch (error) {
+      reject(error);
+      return;
+    }
+
+    if (info.done) {
+      resolve(value);
+    } else {
+      Promise.resolve(value).then(_next, _throw);
+    }
+  }
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var self = this,
+          args = arguments;
+      return new Promise(function (resolve, reject) {
+        var gen = fn.apply(self, args);
+
+        function _next(value) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+        }
+
+        function _throw(err) {
+          asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+        }
+
+        _next(undefined);
+      });
+    };
+  }
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+  }
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  /**
+   * Copyright (c) 2014-present, Facebook, Inc.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE file in the root directory of this source tree.
+   */
+  var runtime = function (exports) {
+
+    var Op = Object.prototype;
+    var hasOwn = Op.hasOwnProperty;
+    var undefined$1; // More compressible than void 0.
+
+    var $Symbol = typeof Symbol === "function" ? Symbol : {};
+    var iteratorSymbol = $Symbol.iterator || "@@iterator";
+    var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
+    var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+    function wrap(innerFn, outerFn, self, tryLocsList) {
+      // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+      var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+      var generator = Object.create(protoGenerator.prototype);
+      var context = new Context(tryLocsList || []); // The ._invoke method unifies the implementations of the .next,
+      // .throw, and .return methods.
+
+      generator._invoke = makeInvokeMethod(innerFn, self, context);
+      return generator;
+    }
+
+    exports.wrap = wrap; // Try/catch helper to minimize deoptimizations. Returns a completion
+    // record like context.tryEntries[i].completion. This interface could
+    // have been (and was previously) designed to take a closure to be
+    // invoked without arguments, but in all the cases we care about we
+    // already have an existing method we want to call, so there's no need
+    // to create a new function object. We can even get away with assuming
+    // the method takes exactly one argument, since that happens to be true
+    // in every case, so we don't have to touch the arguments object. The
+    // only additional allocation required is the completion record, which
+    // has a stable shape and so hopefully should be cheap to allocate.
+
+    function tryCatch(fn, obj, arg) {
+      try {
+        return {
+          type: "normal",
+          arg: fn.call(obj, arg)
+        };
+      } catch (err) {
+        return {
+          type: "throw",
+          arg: err
+        };
+      }
+    }
+
+    var GenStateSuspendedStart = "suspendedStart";
+    var GenStateSuspendedYield = "suspendedYield";
+    var GenStateExecuting = "executing";
+    var GenStateCompleted = "completed"; // Returning this object from the innerFn has the same effect as
+    // breaking out of the dispatch switch statement.
+
+    var ContinueSentinel = {}; // Dummy constructor functions that we use as the .constructor and
+    // .constructor.prototype properties for functions that return Generator
+    // objects. For full spec compliance, you may wish to configure your
+    // minifier not to mangle the names of these two functions.
+
+    function Generator() {}
+
+    function GeneratorFunction() {}
+
+    function GeneratorFunctionPrototype() {} // This is a polyfill for %IteratorPrototype% for environments that
+    // don't natively support it.
+
+
+    var IteratorPrototype = {};
+
+    IteratorPrototype[iteratorSymbol] = function () {
+      return this;
+    };
+
+    var getProto = Object.getPrototypeOf;
+    var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+
+    if (NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+      // This environment has a native %IteratorPrototype%; use it instead
+      // of the polyfill.
+      IteratorPrototype = NativeIteratorPrototype;
+    }
+
+    var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype);
+    GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
+    GeneratorFunctionPrototype.constructor = GeneratorFunction;
+    GeneratorFunctionPrototype[toStringTagSymbol] = GeneratorFunction.displayName = "GeneratorFunction"; // Helper for defining the .next, .throw, and .return methods of the
+    // Iterator interface in terms of a single ._invoke method.
+
+    function defineIteratorMethods(prototype) {
+      ["next", "throw", "return"].forEach(function (method) {
+        prototype[method] = function (arg) {
+          return this._invoke(method, arg);
+        };
+      });
+    }
+
+    exports.isGeneratorFunction = function (genFun) {
+      var ctor = typeof genFun === "function" && genFun.constructor;
+      return ctor ? ctor === GeneratorFunction || // For the native GeneratorFunction constructor, the best we can
+      // do is to check its .name property.
+      (ctor.displayName || ctor.name) === "GeneratorFunction" : false;
+    };
+
+    exports.mark = function (genFun) {
+      if (Object.setPrototypeOf) {
+        Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+      } else {
+        genFun.__proto__ = GeneratorFunctionPrototype;
+
+        if (!(toStringTagSymbol in genFun)) {
+          genFun[toStringTagSymbol] = "GeneratorFunction";
+        }
+      }
+
+      genFun.prototype = Object.create(Gp);
+      return genFun;
+    }; // Within the body of any async function, `await x` is transformed to
+    // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+    // `hasOwn.call(value, "__await")` to determine if the yielded value is
+    // meant to be awaited.
+
+
+    exports.awrap = function (arg) {
+      return {
+        __await: arg
+      };
+    };
+
+    function AsyncIterator(generator, PromiseImpl) {
+      function invoke(method, arg, resolve, reject) {
+        var record = tryCatch(generator[method], generator, arg);
+
+        if (record.type === "throw") {
+          reject(record.arg);
+        } else {
+          var result = record.arg;
+          var value = result.value;
+
+          if (value && typeof value === "object" && hasOwn.call(value, "__await")) {
+            return PromiseImpl.resolve(value.__await).then(function (value) {
+              invoke("next", value, resolve, reject);
+            }, function (err) {
+              invoke("throw", err, resolve, reject);
+            });
+          }
+
+          return PromiseImpl.resolve(value).then(function (unwrapped) {
+            // When a yielded Promise is resolved, its final value becomes
+            // the .value of the Promise<{value,done}> result for the
+            // current iteration.
+            result.value = unwrapped;
+            resolve(result);
+          }, function (error) {
+            // If a rejected Promise was yielded, throw the rejection back
+            // into the async generator function so it can be handled there.
+            return invoke("throw", error, resolve, reject);
+          });
+        }
+      }
+
+      var previousPromise;
+
+      function enqueue(method, arg) {
+        function callInvokeWithMethodAndArg() {
+          return new PromiseImpl(function (resolve, reject) {
+            invoke(method, arg, resolve, reject);
+          });
+        }
+
+        return previousPromise = // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, // Avoid propagating failures to Promises returned by later
+        // invocations of the iterator.
+        callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
+      } // Define the unified helper method that is used to implement .next,
+      // .throw, and .return (see defineIteratorMethods).
+
+
+      this._invoke = enqueue;
+    }
+
+    defineIteratorMethods(AsyncIterator.prototype);
+
+    AsyncIterator.prototype[asyncIteratorSymbol] = function () {
+      return this;
+    };
+
+    exports.AsyncIterator = AsyncIterator; // Note that simple async functions are implemented on top of
+    // AsyncIterator objects; they just return a Promise for the value of
+    // the final result produced by the iterator.
+
+    exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+      if (PromiseImpl === void 0) PromiseImpl = Promise;
+      var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl);
+      return exports.isGeneratorFunction(outerFn) ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function (result) {
+        return result.done ? result.value : iter.next();
+      });
+    };
+
+    function makeInvokeMethod(innerFn, self, context) {
+      var state = GenStateSuspendedStart;
+      return function invoke(method, arg) {
+        if (state === GenStateExecuting) {
+          throw new Error("Generator is already running");
+        }
+
+        if (state === GenStateCompleted) {
+          if (method === "throw") {
+            throw arg;
+          } // Be forgiving, per 25.3.3.3.3 of the spec:
+          // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+
+
+          return doneResult();
+        }
+
+        context.method = method;
+        context.arg = arg;
+
+        while (true) {
+          var delegate = context.delegate;
+
+          if (delegate) {
+            var delegateResult = maybeInvokeDelegate(delegate, context);
+
+            if (delegateResult) {
+              if (delegateResult === ContinueSentinel) continue;
+              return delegateResult;
+            }
+          }
+
+          if (context.method === "next") {
+            // Setting context._sent for legacy support of Babel's
+            // function.sent implementation.
+            context.sent = context._sent = context.arg;
+          } else if (context.method === "throw") {
+            if (state === GenStateSuspendedStart) {
+              state = GenStateCompleted;
+              throw context.arg;
+            }
+
+            context.dispatchException(context.arg);
+          } else if (context.method === "return") {
+            context.abrupt("return", context.arg);
+          }
+
+          state = GenStateExecuting;
+          var record = tryCatch(innerFn, self, context);
+
+          if (record.type === "normal") {
+            // If an exception is thrown from innerFn, we leave state ===
+            // GenStateExecuting and loop back for another invocation.
+            state = context.done ? GenStateCompleted : GenStateSuspendedYield;
+
+            if (record.arg === ContinueSentinel) {
+              continue;
+            }
+
+            return {
+              value: record.arg,
+              done: context.done
+            };
+          } else if (record.type === "throw") {
+            state = GenStateCompleted; // Dispatch the exception by looping back around to the
+            // context.dispatchException(context.arg) call above.
+
+            context.method = "throw";
+            context.arg = record.arg;
+          }
+        }
+      };
+    } // Call delegate.iterator[context.method](context.arg) and handle the
+    // result, either by returning a { value, done } result from the
+    // delegate iterator, or by modifying context.method and context.arg,
+    // setting context.delegate to null, and returning the ContinueSentinel.
+
+
+    function maybeInvokeDelegate(delegate, context) {
+      var method = delegate.iterator[context.method];
+
+      if (method === undefined$1) {
+        // A .throw or .return when the delegate iterator has no .throw
+        // method always terminates the yield* loop.
+        context.delegate = null;
+
+        if (context.method === "throw") {
+          // Note: ["return"] must be used for ES3 parsing compatibility.
+          if (delegate.iterator["return"]) {
+            // If the delegate iterator has a return method, give it a
+            // chance to clean up.
+            context.method = "return";
+            context.arg = undefined$1;
+            maybeInvokeDelegate(delegate, context);
+
+            if (context.method === "throw") {
+              // If maybeInvokeDelegate(context) changed context.method from
+              // "return" to "throw", let that override the TypeError below.
+              return ContinueSentinel;
+            }
+          }
+
+          context.method = "throw";
+          context.arg = new TypeError("The iterator does not provide a 'throw' method");
+        }
+
+        return ContinueSentinel;
+      }
+
+      var record = tryCatch(method, delegate.iterator, context.arg);
+
+      if (record.type === "throw") {
+        context.method = "throw";
+        context.arg = record.arg;
+        context.delegate = null;
+        return ContinueSentinel;
+      }
+
+      var info = record.arg;
+
+      if (!info) {
+        context.method = "throw";
+        context.arg = new TypeError("iterator result is not an object");
+        context.delegate = null;
+        return ContinueSentinel;
+      }
+
+      if (info.done) {
+        // Assign the result of the finished delegate to the temporary
+        // variable specified by delegate.resultName (see delegateYield).
+        context[delegate.resultName] = info.value; // Resume execution at the desired location (see delegateYield).
+
+        context.next = delegate.nextLoc; // If context.method was "throw" but the delegate handled the
+        // exception, let the outer generator proceed normally. If
+        // context.method was "next", forget context.arg since it has been
+        // "consumed" by the delegate iterator. If context.method was
+        // "return", allow the original .return call to continue in the
+        // outer generator.
+
+        if (context.method !== "return") {
+          context.method = "next";
+          context.arg = undefined$1;
+        }
+      } else {
+        // Re-yield the result returned by the delegate method.
+        return info;
+      } // The delegate iterator is finished, so forget it and continue with
+      // the outer generator.
+
+
+      context.delegate = null;
+      return ContinueSentinel;
+    } // Define Generator.prototype.{next,throw,return} in terms of the
+    // unified ._invoke helper method.
+
+
+    defineIteratorMethods(Gp);
+    Gp[toStringTagSymbol] = "Generator"; // A Generator should always return itself as the iterator object when the
+    // @@iterator function is called on it. Some browsers' implementations of the
+    // iterator prototype chain incorrectly implement this, causing the Generator
+    // object to not be returned from this call. This ensures that doesn't happen.
+    // See https://github.com/facebook/regenerator/issues/274 for more details.
+
+    Gp[iteratorSymbol] = function () {
+      return this;
+    };
+
+    Gp.toString = function () {
+      return "[object Generator]";
+    };
+
+    function pushTryEntry(locs) {
+      var entry = {
+        tryLoc: locs[0]
+      };
+
+      if (1 in locs) {
+        entry.catchLoc = locs[1];
+      }
+
+      if (2 in locs) {
+        entry.finallyLoc = locs[2];
+        entry.afterLoc = locs[3];
+      }
+
+      this.tryEntries.push(entry);
+    }
+
+    function resetTryEntry(entry) {
+      var record = entry.completion || {};
+      record.type = "normal";
+      delete record.arg;
+      entry.completion = record;
+    }
+
+    function Context(tryLocsList) {
+      // The root entry object (effectively a try statement without a catch
+      // or a finally block) gives us a place to store values thrown from
+      // locations where there is no enclosing try statement.
+      this.tryEntries = [{
+        tryLoc: "root"
+      }];
+      tryLocsList.forEach(pushTryEntry, this);
+      this.reset(true);
+    }
+
+    exports.keys = function (object) {
+      var keys = [];
+
+      for (var key in object) {
+        keys.push(key);
+      }
+
+      keys.reverse(); // Rather than returning an object with a next method, we keep
+      // things simple and return the next function itself.
+
+      return function next() {
+        while (keys.length) {
+          var key = keys.pop();
+
+          if (key in object) {
+            next.value = key;
+            next.done = false;
+            return next;
+          }
+        } // To avoid creating an additional object, we just hang the .value
+        // and .done properties off the next function object itself. This
+        // also ensures that the minifier will not anonymize the function.
+
+
+        next.done = true;
+        return next;
+      };
+    };
+
+    function values(iterable) {
+      if (iterable) {
+        var iteratorMethod = iterable[iteratorSymbol];
+
+        if (iteratorMethod) {
+          return iteratorMethod.call(iterable);
+        }
+
+        if (typeof iterable.next === "function") {
+          return iterable;
+        }
+
+        if (!isNaN(iterable.length)) {
+          var i = -1,
+              next = function next() {
+            while (++i < iterable.length) {
+              if (hasOwn.call(iterable, i)) {
+                next.value = iterable[i];
+                next.done = false;
+                return next;
+              }
+            }
+
+            next.value = undefined$1;
+            next.done = true;
+            return next;
+          };
+
+          return next.next = next;
+        }
+      } // Return an iterator with no values.
+
+
+      return {
+        next: doneResult
+      };
+    }
+
+    exports.values = values;
+
+    function doneResult() {
+      return {
+        value: undefined$1,
+        done: true
+      };
+    }
+
+    Context.prototype = {
+      constructor: Context,
+      reset: function (skipTempReset) {
+        this.prev = 0;
+        this.next = 0; // Resetting context._sent for legacy support of Babel's
+        // function.sent implementation.
+
+        this.sent = this._sent = undefined$1;
+        this.done = false;
+        this.delegate = null;
+        this.method = "next";
+        this.arg = undefined$1;
+        this.tryEntries.forEach(resetTryEntry);
+
+        if (!skipTempReset) {
+          for (var name in this) {
+            // Not sure about the optimal order of these conditions:
+            if (name.charAt(0) === "t" && hasOwn.call(this, name) && !isNaN(+name.slice(1))) {
+              this[name] = undefined$1;
+            }
+          }
+        }
+      },
+      stop: function () {
+        this.done = true;
+        var rootEntry = this.tryEntries[0];
+        var rootRecord = rootEntry.completion;
+
+        if (rootRecord.type === "throw") {
+          throw rootRecord.arg;
+        }
+
+        return this.rval;
+      },
+      dispatchException: function (exception) {
+        if (this.done) {
+          throw exception;
+        }
+
+        var context = this;
+
+        function handle(loc, caught) {
+          record.type = "throw";
+          record.arg = exception;
+          context.next = loc;
+
+          if (caught) {
+            // If the dispatched exception was caught by a catch block,
+            // then let that catch block handle the exception normally.
+            context.method = "next";
+            context.arg = undefined$1;
+          }
+
+          return !!caught;
+        }
+
+        for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+          var entry = this.tryEntries[i];
+          var record = entry.completion;
+
+          if (entry.tryLoc === "root") {
+            // Exception thrown outside of any try block that could handle
+            // it, so set the completion value of the entire function to
+            // throw the exception.
+            return handle("end");
+          }
+
+          if (entry.tryLoc <= this.prev) {
+            var hasCatch = hasOwn.call(entry, "catchLoc");
+            var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+            if (hasCatch && hasFinally) {
+              if (this.prev < entry.catchLoc) {
+                return handle(entry.catchLoc, true);
+              } else if (this.prev < entry.finallyLoc) {
+                return handle(entry.finallyLoc);
+              }
+            } else if (hasCatch) {
+              if (this.prev < entry.catchLoc) {
+                return handle(entry.catchLoc, true);
+              }
+            } else if (hasFinally) {
+              if (this.prev < entry.finallyLoc) {
+                return handle(entry.finallyLoc);
+              }
+            } else {
+              throw new Error("try statement without catch or finally");
+            }
+          }
+        }
+      },
+      abrupt: function (type, arg) {
+        for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+          var entry = this.tryEntries[i];
+
+          if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) {
+            var finallyEntry = entry;
+            break;
+          }
+        }
+
+        if (finallyEntry && (type === "break" || type === "continue") && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc) {
+          // Ignore the finally entry if control is not jumping to a
+          // location outside the try/catch block.
+          finallyEntry = null;
+        }
+
+        var record = finallyEntry ? finallyEntry.completion : {};
+        record.type = type;
+        record.arg = arg;
+
+        if (finallyEntry) {
+          this.method = "next";
+          this.next = finallyEntry.finallyLoc;
+          return ContinueSentinel;
+        }
+
+        return this.complete(record);
+      },
+      complete: function (record, afterLoc) {
+        if (record.type === "throw") {
+          throw record.arg;
+        }
+
+        if (record.type === "break" || record.type === "continue") {
+          this.next = record.arg;
+        } else if (record.type === "return") {
+          this.rval = this.arg = record.arg;
+          this.method = "return";
+          this.next = "end";
+        } else if (record.type === "normal" && afterLoc) {
+          this.next = afterLoc;
+        }
+
+        return ContinueSentinel;
+      },
+      finish: function (finallyLoc) {
+        for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+          var entry = this.tryEntries[i];
+
+          if (entry.finallyLoc === finallyLoc) {
+            this.complete(entry.completion, entry.afterLoc);
+            resetTryEntry(entry);
+            return ContinueSentinel;
+          }
+        }
+      },
+      "catch": function (tryLoc) {
+        for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+          var entry = this.tryEntries[i];
+
+          if (entry.tryLoc === tryLoc) {
+            var record = entry.completion;
+
+            if (record.type === "throw") {
+              var thrown = record.arg;
+              resetTryEntry(entry);
+            }
+
+            return thrown;
+          }
+        } // The context.catch method must only be called with a location
+        // argument that corresponds to a known catch block.
+
+
+        throw new Error("illegal catch attempt");
+      },
+      delegateYield: function (iterable, resultName, nextLoc) {
+        this.delegate = {
+          iterator: values(iterable),
+          resultName: resultName,
+          nextLoc: nextLoc
+        };
+
+        if (this.method === "next") {
+          // Deliberately forget the last sent value so that we don't
+          // accidentally pass it on to the delegate.
+          this.arg = undefined$1;
+        }
+
+        return ContinueSentinel;
+      }
+    }; // Regardless of whether this script is executing as a CommonJS module
+    // or not, return the runtime object so that we can declare the variable
+    // regeneratorRuntime in the outer scope, which allows this module to be
+    // injected easily by `bin/regenerator --include-runtime script.js`.
+
+    return exports;
+  }( // If this script is executing as a CommonJS module, use module.exports
+  // as the regeneratorRuntime namespace. Otherwise create a new empty
+  // object. Either way, the resulting object will be used to initialize
+  // the regeneratorRuntime variable at the top of this file.
+  typeof module === "object" ? module.exports : {});
+
+  try {
+    regeneratorRuntime = runtime;
+  } catch (accidentalStrictMode) {
+    // This module should not be running in strict mode, so the above
+    // assignment should always work unless something is misconfigured. Just
+    // in case runtime.js accidentally runs in strict mode, we can escape
+    // strict mode using a global Function call. This could conceivably fail
+    // if a Content Security Policy forbids using Function, but in that case
+    // the proper solution is to fix the accidental strict mode problem. If
+    // you've misconfigured your bundler to force strict mode and applied a
+    // CSP to forbid Function, and you're not willing to fix either of those
+    // problems, please detail your unique predicament in a GitHub issue.
+    Function("r", "regeneratorRuntime = r")(runtime);
+  }
+
+  // about arrow
+  function getArrowPoint(beginPoint, endPoint, par) {
+    var slopyAngle = Math.atan2(endPoint.y - beginPoint.y, endPoint.x - beginPoint.x);
+    var angle = 0.6;
+    var innerAngle = 0.3;
+    var innerPar = par / 3 * 2;
+    var point1 = {
+      x: endPoint.x - Math.round(par * Math.cos(slopyAngle + angle)),
+      y: endPoint.y - Math.round(par * Math.sin(slopyAngle + angle))
+    };
+    var point2 = {
+      x: endPoint.x - Math.round(par * Math.cos(slopyAngle - angle)),
+      y: endPoint.y - Math.round(par * Math.sin(slopyAngle - angle))
+    };
+    var point3 = {
+      x: endPoint.x - Math.round(innerPar * Math.cos(slopyAngle + innerAngle)),
+      y: endPoint.y - Math.round(innerPar * Math.sin(slopyAngle + innerAngle))
+    };
+    var point4 = {
+      x: endPoint.x - Math.round(innerPar * Math.cos(slopyAngle - innerAngle)),
+      y: endPoint.y - Math.round(innerPar * Math.sin(slopyAngle - innerAngle))
+    };
+    return [beginPoint, point4, point2, endPoint, point1, point3];
+  }
+  function drawArrow(ctx, options) {
+    var canvasWidth = options.canvasWidth;
+    var canvasHeight = options.canvasHeight;
+    var arrowSize = options.arrowSize;
+    ctx.save(); // ctx.globalCompositeOperation = 'source-over';
+
+    ctx.beginPath();
+    ctx.moveTo(options.points[0].x * canvasWidth, options.points[0].y * canvasHeight);
+
+    var paintArrar = function paintArrar(ctx, polygonVertex) {
+      ctx.beginPath();
+      ctx.moveTo(polygonVertex[0].x, polygonVertex[0].y);
+
+      for (var i = 1; i < polygonVertex.length; i++) {
+        ctx.lineTo(polygonVertex[i].x, polygonVertex[i].y);
+      }
+
+      ctx.closePath();
+      ctx.fill();
+    };
+
+    var drawArrow = function drawArrow(ctx, stopPoint, beginPoint, arrowSize) {
+      var polygonVertex = getArrowPoint(beginPoint, stopPoint, arrowSize);
+      paintArrar(ctx, polygonVertex);
+    };
+
+    for (var i = 1; i < options.points.length; i++) {
+      drawArrow(ctx, {
+        x: options.points[i].x * canvasWidth,
+        y: options.points[i].y * canvasHeight
+      }, {
+        x: options.points[i - 1].x * canvasWidth,
+        y: options.points[i - 1].y * canvasHeight
+      }, arrowSize);
+    }
+
+    ctx.restore();
+  }
+
+  var Dom = /*#__PURE__*/function () {
+    function Dom() {
+      _classCallCheck(this, Dom);
+    }
+
+    _createClass(Dom, null, [{
+      key: "createEl",
+      value: function createEl() {
+        var elName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'div';
+
+        var _ref = arguments.length > 1 ? arguments[1] : undefined,
+            _ref$styles = _ref.styles,
+            styles = _ref$styles === void 0 ? {} : _ref$styles,
+            _ref$attrs = _ref.attrs,
+            attrs = _ref$attrs === void 0 ? {} : _ref$attrs,
+            _ref$props = _ref.props,
+            props = _ref$props === void 0 ? {} : _ref$props;
+
+        var el = document.createElement(elName);
+        Object.keys(styles).map(function (keys) {
+          el.style[keys] = styles[keys];
+        });
+        Object.keys(attrs).map(function (keys) {
+          el.setAttribute(keys, attrs[keys]);
+        });
+        Object.keys(props).map(function (keys) {
+          el[keys] = props[keys];
+        });
+        return el;
+      }
+    }, {
+      key: "hasClass",
+      value: function hasClass(el, className) {
+        return el.classList.contains(className);
+      }
+    }, {
+      key: "addClass",
+      value: function addClass(el, className) {
+        el.classList.add(className);
+      }
+    }, {
+      key: "removeClass",
+      value: function removeClass(el, className) {
+        el.classList.remove(className);
+      }
+    }, {
+      key: "setAttr",
+      value: function setAttr(el, attr, attrVal) {
+        el.setAttribute(attr, attrVal);
+      }
+    }, {
+      key: "delAttr",
+      value: function delAttr(el, attr) {
+        el.removeAttribute(attr);
+      }
+    }, {
+      key: "appendChild",
+      value: function appendChild(parentEl, childEl) {
+        parentEl.appendChild(childEl);
+      }
+    }, {
+      key: "removeChild",
+      value: function removeChild(parentEl, childEl) {
+        parentEl.removeChild(childEl);
+      }
+    }]);
+
+    return Dom;
+  }();
+
+  var Draw = /*#__PURE__*/function () {
+    function Draw(options) {
+      _classCallCheck(this, Draw);
+
+      var container = options.container,
+          _options$bgImg = options.bgImg,
+          bgImg = _options$bgImg === void 0 ? "" : _options$bgImg,
+          _options$lineColor = options.lineColor,
+          lineColor = _options$lineColor === void 0 ? "#f00" : _options$lineColor,
+          _options$lineWidth = options.lineWidth,
+          lineWidth = _options$lineWidth === void 0 ? "1" : _options$lineWidth,
+          _options$arrowSize = options.arrowSize,
+          arrowSize = _options$arrowSize === void 0 ? 15 : _options$arrowSize,
+          _options$eraserSize = options.eraserSize,
+          eraserSize = _options$eraserSize === void 0 ? 10 : _options$eraserSize,
+          _options$canvasBgColo = options.canvasBgColor,
+          canvasBgColor = _options$canvasBgColo === void 0 ? "#fff" : _options$canvasBgColo,
+          _options$textFontSize = options.textFontSize,
+          textFontSize = _options$textFontSize === void 0 ? 16 : _options$textFontSize,
+          _options$textLineHeig = options.textLineHeight,
+          textLineHeight = _options$textLineHeig === void 0 ? 20 : _options$textLineHeig,
+          _options$textColor = options.textColor,
+          textColor = _options$textColor === void 0 ? "#f00" : _options$textColor;
+      if (!container) throw Error("No container element were found...");
+      this.container = container;
+      this.canvas = this.createCanvasEl(container);
+      this.context = this.canvas.getContext("2d");
+      this.mode = "pencil";
+      this.canvasWidth = this.canvas.width;
+      this.canvasHeight = this.canvas.height;
+      this.configuration = {
+        lineColor: lineColor,
+        lineWidth: lineWidth,
+        arrowSize: arrowSize,
+        eraserSize: eraserSize,
+        canvasBgColor: canvasBgColor,
+        textFontSize: textFontSize,
+        textLineHeight: textLineHeight,
+        textColor: textColor
+      };
+      this.arrowPoints = [];
+      this.isDrawing = false;
+      this.image = new Image();
+      this.bgImg = bgImg;
+      this.textareaEl = null;
+      this.measureEl = null;
+      this.createTextMeasure();
+      this.init();
+    }
+
+    _createClass(Draw, [{
+      key: "createCanvasEl",
+      value: function createCanvasEl(container) {
+        var canvasEl = Dom.createEl('canvas', {
+          styles: {
+            height: "".concat(container.clientHeight, "px"),
+            width: "".concat(container.clientWidth, "px")
+          },
+          attrs: {
+            width: container.clientHeight,
+            height: container.clientWidth
+          }
+        });
+        Dom.appendChild(container, canvasEl);
+        return canvasEl;
+      }
+    }, {
+      key: "init",
+      value: function init() {
+        var _this = this;
+
+        var originX,
+            originY = null; // 鼠标的坐标 (屏幕坐标 + 容器偏移量)
+
+        var _this$canvas$getBound = this.canvas.getBoundingClientRect(),
+            c_offsetLeft = _this$canvas$getBound.x,
+            c_offsetTop = _this$canvas$getBound.y;
+
+        this.clear();
+        this.setBackground();
+        this.canvas.addEventListener("mousedown", function (event) {
+          _this.isDrawing = true;
+          _this.image.src = _this.canvas.toDataURL("image/png");
+          var clientX = event.clientX,
+              clientY = event.clientY; // 鼠标按下时, canvas的初始坐标 (会随着move而变)
+
+          originX = clientX - c_offsetLeft;
+          originY = clientY - c_offsetTop; // 记录初始按下的坐标
+
+          var ft_originX = originX;
+          var ft_originY = originY;
+
+          _this.context.moveTo(originX, originY);
+
+          _this.context.lineWidth = _this.configuration.lineWidth;
+          _this.context.strokeStyle = _this.configuration.lineColor;
+          _this.context.fillStyle = _this.configuration.lineColor;
+
+          _this.context.beginPath();
+
+          _this.mode === 'arrow' && _this.saveArrowPoint({
+            x: originX,
+            y: originY
+          });
+          _this.mode === 'text' && _this.createTextArea({
+            x: ft_originX,
+            y: ft_originY
+          });
+        });
+        this.canvas.addEventListener("mousemove", function (event) {
+          if (_this.isDrawing) {
+            var clientX = event.clientX,
+                clientY = event.clientY; // 鼠标移动时, canvas中的实时坐标
+
+            var x = clientX - c_offsetLeft;
+            var y = clientY - c_offsetTop; // 默认是鼠标刚按下的坐标.
+
+            var newOriginX = originX,
+                newOriginY = originY; // 计算 横/纵 坐标到初始点的距离
+
+            var distanceX = Math.abs(x - originX);
+            var distanceY = Math.abs(y - originY); // 让形状左上角的坐标永远大于右下角的坐标, 保证图形能正确绘制
+
+            if (x < originX) newOriginX = x;
+            if (y < originY) newOriginY = y; // (x, y) 为画布中的实时坐标. (originX / Y) 是鼠标点击时在画布上的坐标
+            // (newOriginX / Y) 绘制形状(比如矩形)时, 左上角的坐标
+
+            var mousePosition = {
+              x: x,
+              y: y,
+              originX: originX,
+              originY: originY,
+              newOriginX: newOriginX,
+              newOriginY: newOriginY,
+              distanceX: distanceX,
+              distanceY: distanceY
+            };
+
+            var mousemoveEvent = _this.handleMousemove();
+
+            var currMousemoveEvent = mousemoveEvent[_this.mode];
+            currMousemoveEvent && currMousemoveEvent(mousePosition);
+          }
+        }); // 鼠标移出和松开鼠标时, 结束绘画
+
+        this.canvas.addEventListener("mouseup", function () {
+          return _this.endOfDrawing();
+        });
+        this.canvas.addEventListener("mouseleave", function () {
+          return _this.endOfDrawing();
+        });
+      } // 在绘制形状的过程中需要重新绘制，否则会画出移动过程中的图像
+
+    }, {
+      key: "reDraw",
+      value: function reDraw() {
+        this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+        this.context.drawImage(this.image, 0, 0);
+        this.context.beginPath();
+      }
+    }, {
+      key: "endOfDrawing",
+      value: function endOfDrawing() {
+        if (this.isDrawing) {
+          this.context.closePath();
+          this.isDrawing = false;
+        }
+      }
+    }, {
+      key: "setBackground",
+      value: function setBackground() {
+        if (this.bgImg) {
+          this.context.globalCompositeOperation = 'destination-out';
+          this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+          this.canvas.style.background = "url(".concat(this.bgImg, ")");
+          this.canvas.style.backgroundSize = "100% 100%";
+          this.canvas.style.backgroundPosition = "center";
+          this.canvas.style.backgroundRepeat = 'no-repeat';
+          this.context.globalCompositeOperation = 'source-over';
+        }
+      }
+    }, {
+      key: "handleMousemove",
+      value: function handleMousemove() {
+        var _this2 = this;
+
+        return {
+          pencil: function pencil(mousePosition) {
+            var x = mousePosition.x,
+                y = mousePosition.y;
+
+            _this2.context.lineTo(x, y);
+
+            _this2.context.stroke();
+          },
+          straightLine: function straightLine(mousePosition) {
+            var x = mousePosition.x,
+                y = mousePosition.y,
+                originX = mousePosition.originX,
+                originY = mousePosition.originY;
+
+            _this2.reDraw();
+
+            _this2.context.moveTo(originX, originY);
+
+            _this2.context.lineTo(x, y);
+
+            _this2.context.stroke();
+          },
+          rect: function rect(mousePosition) {
+            var newOriginX = mousePosition.newOriginX,
+                newOriginY = mousePosition.newOriginY,
+                distanceX = mousePosition.distanceX,
+                distanceY = mousePosition.distanceY;
+
+            _this2.reDraw();
+
+            _this2.context.rect(newOriginX, newOriginY, distanceX, distanceY);
+
+            _this2.context.stroke();
+
+            _this2.context.closePath();
+          },
+          circle: function circle(mousePosition) {
+            var newOriginX = mousePosition.newOriginX,
+                newOriginY = mousePosition.newOriginY,
+                distanceX = mousePosition.distanceX,
+                distanceY = mousePosition.distanceY;
+
+            _this2.reDraw(); // 根据狗股定理算出半径
+
+
+            var r = Math.sqrt(distanceX * distanceX + distanceY * distanceY); // 确保鼠标在圆心位置(虽然只能保证左边)
+
+            _this2.context.arc(newOriginX + distanceX, newOriginY + distanceY, r, 0, 2 * Math.PI);
+
+            _this2.context.stroke();
+          },
+          arrow: function arrow(mousePosition) {
+            var x = mousePosition.x,
+                y = mousePosition.y;
+
+            _this2.reDraw();
+
+            _this2.arrowPoints[1] = {
+              x: x / _this2.canvasWidth,
+              y: y / _this2.canvasHeight
+            };
+            drawArrow(_this2.context, {
+              points: _this2.arrowPoints,
+              arrowSize: _this2.configuration.arrowSize,
+              canvasWidth: _this2.canvasWidth,
+              canvasHeight: _this2.canvasHeight
+            });
+          },
+          eraser: function eraser(mousePosition) {
+            var x = mousePosition.x,
+                y = mousePosition.y;
+            _this2.bgImg ? _this2.context.globalCompositeOperation = 'destination-out' : null;
+            _this2.context.strokeStyle = _this2.configuration.canvasBgColor;
+            _this2.context.fillStyle = _this2.configuration.canvasBgColor;
+            _this2.context.lineWidth = _this2.configuration.eraserSize;
+
+            _this2.context.lineTo(x, y);
+
+            _this2.context.stroke();
+          },
+          clear: function clear() {
+            return _this2.clear();
+          }
+        };
+      }
+    }, {
+      key: "saveArrowPoint",
+      value: function saveArrowPoint(position) {
+        this.arrowPoints = [];
+        this.arrowPoints.push({
+          x: position.x / this.canvasWidth,
+          y: position.y / this.canvasHeight
+        });
+      }
+    }, {
+      key: "createTextMeasure",
+      value: function createTextMeasure() {
+        if (this.measureEl) {
+          Dom.removeChild(this.container, this.measureEl);
+          this.measureEl = null;
+        }
+
+        this.measureEl = Dom.createEl('pre', {
+          styles: {
+            fontSize: "".concat(this.configuration.textFontSize, "px"),
+            lineHeight: "".concat(this.configuration.textLineHeight, "px"),
+            color: this.configuration.textColor
+          }
+        });
+        Dom.addClass(this.measureEl, '__edb-text-pre');
+        Dom.appendChild(this.container, this.measureEl);
+      }
+    }, {
+      key: "drawText",
+      value: function drawText(ctx, options) {
+        var _this3 = this;
+
+        options.font = options.font || '"PingFang SC","Microsoft YaHei","微软雅黑"';
+        var string = options.text;
+        ctx.save();
+        ctx.textBaseline = 'middle';
+        ctx.font = "".concat(this.configuration.textFontSize, "px/").concat(this.configuration.textLineHeight, "px ").concat(options.font);
+        ctx.fillStyle = this.configuration.textColor;
+        ctx.globalCompositeOperation = 'source-over';
+        string.replace(/<br>/g, '\n').split(/\n/).map(function (value, index) {
+          ctx.fillText(value, options.position.x + 2, options.position.y + index * _this3.configuration.textLineHeight + _this3.configuration.textLineHeight / 2 + 2);
+        });
+        ctx.restore();
+      }
+    }, {
+      key: "createTextArea",
+      value: function createTextArea(position) {
+        var _this4 = this;
+
+        this.mode = null;
+        this.boxDom = Dom.createEl('div', {
+          styles: {
+            left: "".concat(position.x, "px"),
+            top: "".concat(position.y, "px"),
+            lineHeight: "".concat(this.configuration.textLineHeight, "px"),
+            fontSize: "".concat(this.configuration.textFontSize, "px")
+          }
+        });
+        Dom.addClass(this.boxDom, '__edb-textarea-box');
+        this.textareaEl = Dom.createEl('textarea', {
+          styles: {
+            lineHeight: "".concat(this.configuration.textLineHeight, "px"),
+            color: this.configuration.textColor,
+            fontSize: "".concat(this.configuration.textFontSize, "px")
+          },
+          props: {
+            placeholder: '请点击输入',
+            autofocus: true
+          }
+        });
+        Dom.addClass(this.textareaEl, '__edb-textarea');
+        Dom.appendChild(this.boxDom, this.textareaEl);
+        Dom.appendChild(this.container, this.boxDom);
+
+        this.textareaEl.onblur = function () {
+          _this4.mode = null;
+          Dom.delAttr(_this4.textareaEl, 'autofocus');
+
+          _this4.drawText(_this4.context, {
+            text: _this4.textareaEl.value,
+            position: position
+          });
+
+          Dom.removeChild(_this4.container, _this4.boxDom);
+        };
+
+        this.textareaEl.addEventListener('input', function (e) {
+          _this4.measureEl.innerHTML = e.target.value + ' ';
+          _this4.textareaEl.style.width = _this4.measureEl.clientWidth + 'px';
+          _this4.textareaEl.style.height = _this4.measureEl.clientHeight + 'px';
+        });
+      } // api
+      // Change the default setting
+
+    }, {
+      key: "config",
+      value: function config(type, value) {
+        this.configuration[type] = value;
+        type === "canvasBgColor" && this.clear();
+        (type === "textFontSize" || type === 'textColor' || type === 'textLineHeight') && this.createTextMeasure();
+      }
+    }, {
+      key: "setMode",
+      value: function setMode(mode) {
+        this.context.globalCompositeOperation = 'source-over';
+        this.context.strokeStyle = this.configuration.lineColor;
+        this.context.fillStyle = this.configuration.lineColor;
+        this.context.lineWidth = this.configuration.lineWidth;
+        mode === 'eraser' ? Dom.addClass(this.container, '__edb-eraser-hover') : Dom.removeClass(this.container, '__edb-eraser-hover');
+        this.mode = mode;
+      } // 对于有背景图的, 先画背景图, 再覆盖上 笔迹. 不然生成的数据只有笔迹, 因为toDataURL不会包含背景图的数据
+
+    }, {
+      key: "getBase64Data",
+      value: function getBase64Data(type) {
+        var _this5 = this;
+
+        return new Promise(function (resolve, reject) {
+          var that = _this5;
+
+          var _data = that.canvas.toDataURL("image/".concat(type));
+
+          var _canvasEl = Dom.createEl('canvas', {
+            styles: {
+              width: "".concat(that.canvasWidth, "px"),
+              height: "".concat(that.canvasHeight, "px")
+            },
+            attrs: {
+              width: that.canvasWidth,
+              height: that.canvasHeight
+            }
+          });
+
+          var _context = _canvasEl.getContext("2d");
+
+          var img = new Image();
+          img.setAttribute('crossOrigin', 'anonymous');
+          img.src = that.bgImg;
+
+          img.onerror = function () {
+            return reject('Image loading failed.');
+          };
+
+          img.onload = function () {
+            _context.drawImage(this, 0, 0, that.canvasWidth, that.canvasHeight);
+
+            var _img = new Image();
+
+            _img.setAttribute('crossOrigin', 'anonymous');
+
+            _img.src = _data;
+
+            _img.onerror = function () {
+              return reject('Image loading failed.');
+            };
+
+            _img.onload = function () {
+              _context.drawImage(this, 0, 0, that.canvasWidth, that.canvasHeight);
+
+              resolve(_canvasEl.toDataURL("image/".concat(type)));
+            };
+          };
+        });
+      }
+    }, {
+      key: "generateBase64",
+      value: function generateBase64() {
+        var _this6 = this;
+
+        var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "png";
+        return new Promise( /*#__PURE__*/function () {
+          var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(resolve) {
+            var data;
+            return regeneratorRuntime.wrap(function _callee$(_context2) {
+              while (1) {
+                switch (_context2.prev = _context2.next) {
+                  case 0:
+                    if (!_this6.bgImg) {
+                      _context2.next = 7;
+                      break;
+                    }
+
+                    _context2.next = 3;
+                    return _this6.getBase64Data(type);
+
+                  case 3:
+                    data = _context2.sent;
+                    resolve(data);
+                    _context2.next = 8;
+                    break;
+
+                  case 7:
+                    resolve(_this6.canvas.toDataURL("image/".concat(type)));
+
+                  case 8:
+                  case "end":
+                    return _context2.stop();
+                }
+              }
+            }, _callee);
+          }));
+
+          return function (_x) {
+            return _ref.apply(this, arguments);
+          };
+        }());
+      }
+    }, {
+      key: "saveImg",
+      value: function () {
+        var _saveImg = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+          var _attrs;
+
+          var options,
+              imgData,
+              aEl,
+              _args2 = arguments;
+          return regeneratorRuntime.wrap(function _callee2$(_context3) {
+            while (1) {
+              switch (_context3.prev = _context3.next) {
+                case 0:
+                  options = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : {
+                    type: 'png',
+                    fileName: 'canvas_image'
+                  };
+                  imgData = null;
+
+                  if (!this.bgImg) {
+                    _context3.next = 8;
+                    break;
+                  }
+
+                  _context3.next = 5;
+                  return this.getBase64Data(options.type);
+
+                case 5:
+                  imgData = _context3.sent;
+                  _context3.next = 9;
+                  break;
+
+                case 8:
+                  imgData = this.canvas.toDataURL("image/".concat(options.type));
+
+                case 9:
+                  aEl = Dom.createEl('a', {
+                    attrs: (_attrs = {
+                      href: this.canvas.toDataURL("image/".concat(options.type))
+                    }, _defineProperty(_attrs, "href", imgData), _defineProperty(_attrs, "download", "".concat(options.fileName, ".").concat(options.type)), _attrs)
+                  });
+                  aEl.click();
+
+                case 11:
+                case "end":
+                  return _context3.stop();
+              }
+            }
+          }, _callee2, this);
+        }));
+
+        function saveImg() {
+          return _saveImg.apply(this, arguments);
+        }
+
+        return saveImg;
+      }()
+    }, {
+      key: "clear",
+      value: function clear() {
+        this.context.fillStyle = this.configuration.canvasBgColor;
+        this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+        if (this.bgImg) {
+          this.context.globalCompositeOperation = 'destination-out';
+          this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+          this.context.globalCompositeOperation = 'source-over';
+        }
+      }
+    }]);
+
+    return Draw;
+  }();
+  // 撤回操作. (顶多20步)
+  // 事件抽象.
+  // ts重构.
+
+  return Draw;
+
+})));
