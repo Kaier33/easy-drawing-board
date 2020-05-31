@@ -36,6 +36,7 @@
       .container2 {
         z-index: 200;
       }
+      .eraserSize,
       .arrowSize,
       .fontSize,
       .textLineHeight,
@@ -63,6 +64,7 @@
       &nbsp;&nbsp;&nbsp;
       <label>线条粗细: <i class="currLineWidth">1</i><input type="range" onchange="rangeChange(event)" min="1" max="50" value="1"></label>
       <label>箭头大小: <i class="arrowSize">15</i><input type="range" onchange="rangeChange4(event)" min="10" max="30" value="15"></label>
+      <label>橡皮擦大小: <i class="eraserSize">10</i><input type="range" onchange="rangeChange5(event)" min="1" max="30" value="10"></label>
     </div>
     <div>
       <label>文字颜色 <input onchange="colorChange2(event)" id="textColor" type="color" value="#f00f00"></label>
@@ -107,6 +109,12 @@
       dom.innerHTML = e.target.value
       draw && draw.config('arrowSize', e.target.value)
       draw2 && draw2.config('arrowSize', e.target.value)
+    }
+    function rangeChange5(e) {
+      let dom = document.getElementsByClassName('eraserSize')[0];
+      dom.innerHTML = e.target.value
+      draw && draw.config('eraserSize', e.target.value)
+      draw2 && draw2.config('eraserSize', e.target.value)
     }
     function colorChange(e) {
       let dom = document.getElementById('color');

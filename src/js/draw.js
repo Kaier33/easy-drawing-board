@@ -8,6 +8,7 @@ class Draw {
       lineColor = "#f00",
       lineWidth = "1",
       arrowSize = 15,
+      eraserSize = 10,
       canvasBgColor = "#fff",
       textFontSize = 16,
       textLineHeight = 20,
@@ -20,7 +21,7 @@ class Draw {
     this.mode = "pencil";
     this.canvasWidth = this.canvas.width;
     this.canvasHeight = this.canvas.height;
-    this.configuration = { lineColor, lineWidth, arrowSize, canvasBgColor, textFontSize, textLineHeight, textColor };
+    this.configuration = { lineColor, lineWidth, arrowSize, eraserSize, canvasBgColor, textFontSize, textLineHeight, textColor };
     this.arrowPoints = [];
     this.isDrawing = false;
     this.image = new Image();
@@ -193,6 +194,7 @@ class Draw {
         this.bgImg ?  this.context.globalCompositeOperation = 'destination-out' : null;
         this.context.strokeStyle = this.configuration.canvasBgColor;
         this.context.fillStyle = this.configuration.canvasBgColor;
+        this.context.lineWidth = this.configuration.eraserSize;
         this.context.lineTo(x, y);
         this.context.stroke();
       },
@@ -279,12 +281,9 @@ class Draw {
     this.context.globalCompositeOperation = 'source-over';
     this.context.strokeStyle = this.configuration.lineColor;
     this.context.fillStyle = this.configuration.lineColor;
+    this.context.lineWidth = this.configuration.lineWidth;
+    mode === 'eraser' ?  Dom.addClass(this.container, '__edb-eraser-hover') : Dom.removeClass(this.container, '__edb-eraser-hover');
     this.mode = mode;
-    if (mode === 'eraser') {
-      Dom.addClass(this.container, '__edb-eraser-hover')
-    } else {
-      Dom.removeClass(this.container, '__edb-eraser-hover')
-    }
   }
 
   // 对于有背景图的, 先画背景图, 再覆盖上 笔迹. 不然生成的数据只有笔迹, 因为toDataURL不会包含背景图的数据
@@ -351,7 +350,6 @@ class Draw {
 export default Draw;
 
 // todo:
-// 橡皮擦的图标
 // 撤回操作. (顶多20步)
 // 事件抽象.
 // ts重构.

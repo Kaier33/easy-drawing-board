@@ -47,6 +47,7 @@ const draw = new EasyDrawingBoard(options);
 | lineColor      | String             |  #f00         | Color of brush                                |
 | lineWidth      | String / Number    |  1            | Width of brush                                |
 | arrowSize      | String / Number    |  15           | Size of arrows                                |
+| eraserSize     | String / Number    |  10           | Size of eraser                                |
 | textFontSize   | String / Number    |  16           | Font size of the textArea                     |
 | textLineHeight | String / Number    |  20           | Font lineheight of the textArea               |
 | textColor      | String             |  #f00         | Font color of the textArea                    |
@@ -55,7 +56,7 @@ const draw = new EasyDrawingBoard(options);
 
 | Method                | Arguments                                                | Description          |
 | :-: | :- | :- |
-| config( type,val )    | tpye's enum(lineColor, lineWidth, arrowSize, canvasBgColor, textFontSize, textLineHeight, textColor)     | Modifying the default configuration |
+| config( type,val )    | tpye's enum(lineColor, lineWidth, arrowSize, eraserSize, canvasBgColor, textFontSize, textLineHeight, textColor)     | Modifying the default configuration |
 | setMode( mode )       | mode's enum(pencil, straightLine, rect, circle, arrow, eraser)   | Set current mode                              |
 | saveImg( [options] )  | default value { tpye: 'png', fileName: 'canvas_imgae' }  | Save the canvas as an image, and download.    |
 | generateBase64([type])| default value "png"                                      | Generate Base64 data (return Promise)                        |
