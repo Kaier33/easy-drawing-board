@@ -20,7 +20,7 @@ class Dom {
     el.classList.add(className)
   }
   static removeClass(el, className) {
-    el.classList.removeClass(className)
+    el.classList.remove(className)
   }
 
   static setAttr(el, attr, attrVal) {

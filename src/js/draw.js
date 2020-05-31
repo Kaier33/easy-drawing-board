@@ -280,6 +280,11 @@ class Draw {
     this.context.strokeStyle = this.configuration.lineColor;
     this.context.fillStyle = this.configuration.lineColor;
     this.mode = mode;
+    if (mode === 'eraser') {
+      Dom.addClass(this.container, '__edb-eraser-hover')
+    } else {
+      Dom.removeClass(this.container, '__edb-eraser-hover')
+    }
   }
 
   // 对于有背景图的, 先画背景图, 再覆盖上 笔迹. 不然生成的数据只有笔迹, 因为toDataURL不会包含背景图的数据
@@ -346,6 +351,7 @@ class Draw {
 export default Draw;
 
 // todo:
+// 橡皮擦的图标
 // 撤回操作. (顶多20步)
 // 事件抽象.
 // ts重构.
