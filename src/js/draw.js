@@ -29,7 +29,7 @@ class Draw {
     this.textareaEl = null;
     this.measureEl = null;
     // cache
-    this.historyImage = new Image(); // 处理重做和撤销时用到
+    this.historyImage = new Image(); // 撤销时用到
     this.historyUrls = [];           // 存放每一步的base64 url（只取最新的十条）
     this.currentHistoryIndex = -1;   // 当前历史记录的索引
     this.createTextMeasure();
@@ -128,6 +128,7 @@ class Draw {
       this.addHistory();
     }
   }
+
   addHistory() {
     let data = this.canvas.toDataURL('image/png');
     this.historyUrls.push(data);
@@ -143,11 +144,19 @@ class Draw {
     if (currentIndex < 0) {
       this.currentHistoryIndex = -1
       return
+    } else if (currentIndex === 0) { // 画了一笔, 要还原回去
+      this.clear()
+      this.historyUrls = []
+      this.currentHistoryIndex = -1
+      return
     }
-    this.historyImage.src = this.historyUrls[currentIndex]
+    this.currentHistoryIndex -= 1
+    this.historyImage.src = this.historyUrls[this.currentHistoryIndex]
+    this.historyUrls.pop()
     this.historyImage.onload = () => {
-      this.cont
-      ext.drawImage(this.historyImage, 0, 0)
+      this.clear()
+      this.context.drawImage(this.historyImage, 0, 0)
+      
     }
   }
 
