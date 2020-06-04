@@ -156,7 +156,6 @@ class Draw {
     this.historyImage.onload = () => {
       this.clear()
       this.context.drawImage(this.historyImage, 0, 0)
-      
     }
   }
 

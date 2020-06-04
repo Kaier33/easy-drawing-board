@@ -60,6 +60,7 @@ const draw = new EasyDrawingBoard(options);
 | setMode( mode )       | mode's enum(pencil, straightLine, rect, circle, arrow, eraser)   | Set current mode                              |
 | saveImg( [options] )  | default value { tpye: 'png', fileName: 'canvas_imgae' }  | Save the canvas as an image, and download.    |
 | generateBase64([type])| default value "png"                                      | Generate Base64 data                          |
+| undo()                | /                                                        | undo operation                                |
 | clear()               | /                                                        | Clear canvas                                  |
 
 #### example
