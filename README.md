@@ -16,9 +16,11 @@ Using script tag
 <script src="your_path/dist/easy-drawing-board.js"></script>
 ```
 
-## Live Example
+## Play
 
-[live example](https://codepen.io/kaierchou/project/editor/AEepEK#)
+[live example](https://codepen.io/kaierchou/project/editor/AEepEK#)  
+or  
+git clone this repository and open `example/index.html` in your browser
 
 ## Usage
 ### Initialize
