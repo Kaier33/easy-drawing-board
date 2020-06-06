@@ -386,7 +386,6 @@ class Draw {
     }
     const aEl = Dom.createEl("a", {
       attrs: {
-        href: this.canvas.toDataURL(`image/${options.type}`),
         href: imgData,
         download: `${options.fileName}.${options.type}`,
       },
