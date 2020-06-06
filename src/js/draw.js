@@ -1,4 +1,4 @@
-import { drawArrow, loadImg, getBase64Data } from "./utils";
+import { drawArrow, getBase64Data } from "./utils";
 import Dom from "./dom";
 class Draw {
   constructor(options) {
@@ -21,6 +21,10 @@ class Draw {
     this.mode = "pencil";
     this.canvasWidth = this.canvas.width;
     this.canvasHeight = this.canvas.height;
+    this.c_offsetLeft = 0;
+    this.c_offsetTop = 0;
+    this.originX = null;
+    this.originY = null;
     this.configuration = {
       lineColor,
       lineWidth,
@@ -41,7 +45,6 @@ class Draw {
     this.historyImage = new Image(); // 撤销时用到
     this.historyUrls = []; // 存放每一步的base64 url（只取最新的十条）
     this.currentHistoryIndex = -1; // 当前历史记录的索引
-    this.createTextMeasure();
     this.init();
   }
 
@@ -58,77 +61,76 @@ class Draw {
   }
 
   init() {
-    let originX,
-      originY = null; // 鼠标的坐标 (屏幕坐标 + 容器偏移量)
-    const {
-      x: c_offsetLeft,
-      y: c_offsetTop,
-    } = this.canvas.getBoundingClientRect();
+    const { x, y } = this.canvas.getBoundingClientRect();
+    this.c_offsetLeft = x;
+    this.c_offsetTop = y;
     this.clear();
     this.setBackground();
-    this.canvas.addEventListener("mousedown", (event) => {
-      this.isDrawing = true;
-      this.image.src = this.canvas.toDataURL("image/png");
-      const { clientX, clientY } = event;
-      // 鼠标按下时, canvas的初始坐标 (会随着move而变)
-      originX = clientX - c_offsetLeft;
-      originY = clientY - c_offsetTop;
-      // 记录初始按下的坐标
-      const ft_originX = originX;
-      const ft_originY = originY;
-
-      this.context.moveTo(originX, originY);
-      this.context.lineWidth = this.configuration.lineWidth;
-      this.context.strokeStyle = this.configuration.lineColor;
-      this.context.fillStyle = this.configuration.lineColor;
-      this.context.beginPath();
-
-      this.mode === "arrow" && this.saveArrowPoint({ x: originX, y: originY });
-      this.mode === "text" &&
-        this.createTextArea({ x: ft_originX, y: ft_originY });
-    });
-
-    this.canvas.addEventListener("mousemove", (event) => {
-      if (this.isDrawing) {
-        const { clientX, clientY } = event;
-
-        // 鼠标移动时, canvas中的实时坐标
-        const x = clientX - c_offsetLeft;
-        const y = clientY - c_offsetTop;
-
-        // 默认是鼠标刚按下的坐标.
-        let newOriginX = originX,
-          newOriginY = originY;
-
-        // 计算 横/纵 坐标到初始点的距离
-        let distanceX = Math.abs(x - originX);
-        let distanceY = Math.abs(y - originY);
-
-        // 让形状左上角的坐标永远大于右下角的坐标, 保证图形能正确绘制
-        if (x < originX) newOriginX = x;
-        if (y < originY) newOriginY = y;
-
-        // (x, y) 为画布中的实时坐标. (originX / Y) 是鼠标点击时在画布上的坐标
-        // (newOriginX / Y) 绘制形状(比如矩形)时, 左上角的坐标
-        const mousePosition = {
-          x,
-          y,
-          originX,
-          originY,
-          newOriginX,
-          newOriginY,
-          distanceX,
-          distanceY,
-        };
-        let mousemoveEvent = this.handleMousemove();
-        let currMousemoveEvent = mousemoveEvent[this.mode];
-        currMousemoveEvent && currMousemoveEvent(mousePosition);
-      }
-    });
-
-    // 鼠标移出和松开鼠标时, 结束绘画
+    this.createTextMeasure();
+    this.canvas.addEventListener("mousedown", this.mouseDown.bind(this));
+    this.canvas.addEventListener("mousemove", this.mouseMove.bind(this));
     this.canvas.addEventListener("mouseup", () => this.endOfDrawing());
     this.canvas.addEventListener("mouseleave", () => this.endOfDrawing());
+  }
+
+  mouseDown(event) {
+    this.isDrawing = true;
+    this.image.src = this.canvas.toDataURL("image/png");
+    const { clientX, clientY } = event;
+    // 鼠标按下时, canvas的初始坐标 (会随着move而变)
+    this.originX = clientX - this.c_offsetLeft;
+    this.originY = clientY - this.c_offsetTop;
+    // 记录初始按下的坐标
+    const ft_originX = this.originX;
+    const ft_originY = this.originY;
+
+    this.context.moveTo(this.originX, this.originY);
+    this.context.lineWidth = this.configuration.lineWidth;
+    this.context.strokeStyle = this.configuration.lineColor;
+    this.context.fillStyle = this.configuration.lineColor;
+    this.context.beginPath();
+
+    this.mode === "arrow" && this.saveArrowPoint({ x: this.originX, y: this.originY });
+    this.mode === "text" &&
+    this.createTextArea({ x: ft_originX, y: ft_originY });
+  }
+
+  mouseMove(event) {
+    if (this.isDrawing) {
+      const { clientX, clientY } = event;
+
+      // 鼠标移动时, canvas中的实时坐标
+      const x = clientX - this.c_offsetLeft;
+      const y = clientY - this.c_offsetTop;
+
+      // 默认是鼠标刚按下的坐标.
+      let newOriginX = this.originX,
+        newOriginY = this.originY;
+
+      // 计算 横/纵 坐标到初始点的距离
+      let distanceX = Math.abs(x - this.originX);
+      let distanceY = Math.abs(y - this.originY);
+
+      // 让形状左上角的坐标永远大于右下角的坐标, 保证图形能正确绘制
+      if (x < this.originX) newOriginX = x;
+      if (y < this.originY) newOriginY = y;
+
+      // (x, y) 为画布中的实时坐标. (originX / Y) 是鼠标点击时在画布上的坐标
+      // (newOriginX / Y) 绘制形状(比如矩形)时, 左上角的坐标
+      const mousePosition = {
+        x,
+        y,
+        originX: this.originY,
+        originY: this.originY,
+        newOriginX,
+        newOriginY,
+        distanceX,
+        distanceY,
+      };
+      let mousemoveEvent = this.handleMousemove();
+      let currMousemoveEvent = mousemoveEvent[this.mode];
+      currMousemoveEvent && currMousemoveEvent(mousePosition);
+    }
   }
 
   // 在绘制形状的过程中需要重新绘制，否则会画出移动过程中的图像
@@ -154,27 +156,6 @@ class Draw {
       this.historyUrls = this.historyUrls.slice(-10, len);
     }
     this.currentHistoryIndex = this.historyUrls.length - 1;
-  }
-
-  undo() {
-    let currentIndex = this.currentHistoryIndex;
-    if (currentIndex < 0) {
-      this.currentHistoryIndex = -1;
-      return;
-    } else if (currentIndex === 0) {
-      // 画了一笔, 要还原回去
-      this.clear();
-      this.historyUrls = [];
-      this.currentHistoryIndex = -1;
-      return;
-    }
-    this.currentHistoryIndex -= 1;
-    this.historyImage.src = this.historyUrls[this.currentHistoryIndex];
-    this.historyUrls.pop();
-    this.historyImage.onload = () => {
-      this.clear();
-      this.context.drawImage(this.historyImage, 0, 0);
-    };
   }
 
   setBackground() {
@@ -355,6 +336,7 @@ class Draw {
       type === "textLineHeight") &&
       this.createTextMeasure();
   }
+  
   setMode(mode) {
     this.context.globalCompositeOperation = "source-over";
     this.context.strokeStyle = this.configuration.lineColor;
@@ -364,6 +346,27 @@ class Draw {
       ? Dom.addClass(this.container, "__edb-eraser-hover")
       : Dom.removeClass(this.container, "__edb-eraser-hover");
     this.mode = mode;
+  }
+
+  undo() {
+    let currentIndex = this.currentHistoryIndex;
+    if (currentIndex < 0) {
+      this.currentHistoryIndex = -1;
+      return;
+    } else if (currentIndex === 0) {
+      // 画了一笔, 要还原回去
+      this.clear();
+      this.historyUrls = [];
+      this.currentHistoryIndex = -1;
+      return;
+    }
+    this.currentHistoryIndex -= 1;
+    this.historyImage.src = this.historyUrls[this.currentHistoryIndex];
+    this.historyUrls.pop();
+    this.historyImage.onload = () => {
+      this.clear();
+      this.context.drawImage(this.historyImage, 0, 0);
+    };
   }
 
   generateBase64(type = "png") {
