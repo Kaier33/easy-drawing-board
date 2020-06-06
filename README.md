@@ -89,7 +89,7 @@ const draw = new EasyDrawingBoard(options);
 ## Todo
 
 - [x] eraser
-- [ ] undo
+- [x] undo
 - [ ] typescript refactoring
 
 ## License

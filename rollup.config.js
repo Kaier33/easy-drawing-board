@@ -15,7 +15,7 @@ export default {
     }
   ],
   plugins: [
-    terser(),
+    // terser(),
     postcss({
       modules: false,
       plugins: [cssUrl({url: 'inline'})]

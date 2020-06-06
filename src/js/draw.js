@@ -1,5 +1,5 @@
-import { drawArrow } from './utils';
-import Dom from './dom';
+import { drawArrow, loadImg, getBase64Data } from "./utils";
+import Dom from "./dom";
 class Draw {
   constructor(options) {
     const {
@@ -12,7 +12,7 @@ class Draw {
       canvasBgColor = "#fff",
       textFontSize = 16,
       textLineHeight = 20,
-      textColor = "#f00"
+      textColor = "#f00",
     } = options;
     if (!container) throw Error("No container element were found...");
     this.container = container;
@@ -21,7 +21,16 @@ class Draw {
     this.mode = "pencil";
     this.canvasWidth = this.canvas.width;
     this.canvasHeight = this.canvas.height;
-    this.configuration = { lineColor, lineWidth, arrowSize, eraserSize, canvasBgColor, textFontSize, textLineHeight, textColor };
+    this.configuration = {
+      lineColor,
+      lineWidth,
+      arrowSize,
+      eraserSize,
+      canvasBgColor,
+      textFontSize,
+      textLineHeight,
+      textColor,
+    };
     this.arrowPoints = [];
     this.isDrawing = false;
     this.image = new Image();
@@ -30,24 +39,31 @@ class Draw {
     this.measureEl = null;
     // cache
     this.historyImage = new Image(); // 撤销时用到
-    this.historyUrls = [];           // 存放每一步的base64 url（只取最新的十条）
-    this.currentHistoryIndex = -1;   // 当前历史记录的索引
+    this.historyUrls = []; // 存放每一步的base64 url（只取最新的十条）
+    this.currentHistoryIndex = -1; // 当前历史记录的索引
     this.createTextMeasure();
     this.init();
   }
 
   createCanvasEl(container) {
-    const canvasEl = Dom.createEl('canvas', {
-      styles: { height: `${container.clientHeight}px`, width: `${container.clientWidth}px` },
-      attrs: { width: container.clientHeight, height: container.clientWidth }
+    const canvasEl = Dom.createEl("canvas", {
+      styles: {
+        height: `${container.clientHeight}px`,
+        width: `${container.clientWidth}px`,
+      },
+      attrs: { width: container.clientHeight, height: container.clientWidth },
     });
     Dom.appendChild(container, canvasEl);
     return canvasEl;
   }
 
   init() {
-    let originX, originY = null; // 鼠标的坐标 (屏幕坐标 + 容器偏移量)
-    const { x: c_offsetLeft, y: c_offsetTop } = this.canvas.getBoundingClientRect();
+    let originX,
+      originY = null; // 鼠标的坐标 (屏幕坐标 + 容器偏移量)
+    const {
+      x: c_offsetLeft,
+      y: c_offsetTop,
+    } = this.canvas.getBoundingClientRect();
     this.clear();
     this.setBackground();
     this.canvas.addEventListener("mousedown", (event) => {
@@ -67,8 +83,9 @@ class Draw {
       this.context.fillStyle = this.configuration.lineColor;
       this.context.beginPath();
 
-      this.mode === 'arrow' && this.saveArrowPoint({x: originX, y: originY})
-      this.mode === 'text' && this.createTextArea({x: ft_originX, y: ft_originY})
+      this.mode === "arrow" && this.saveArrowPoint({ x: originX, y: originY });
+      this.mode === "text" &&
+        this.createTextArea({ x: ft_originX, y: ft_originY });
     });
 
     this.canvas.addEventListener("mousemove", (event) => {
@@ -130,44 +147,45 @@ class Draw {
   }
 
   addHistory() {
-    let data = this.canvas.toDataURL('image/png');
+    let data = this.canvas.toDataURL("image/png");
     this.historyUrls.push(data);
     let len = this.historyUrls.length;
     if (len > 10) {
-      this.historyUrls = this.historyUrls.slice(-10, len)
+      this.historyUrls = this.historyUrls.slice(-10, len);
     }
     this.currentHistoryIndex = this.historyUrls.length - 1;
   }
 
   undo() {
-    let currentIndex = this.currentHistoryIndex
+    let currentIndex = this.currentHistoryIndex;
     if (currentIndex < 0) {
-      this.currentHistoryIndex = -1
-      return
-    } else if (currentIndex === 0) { // 画了一笔, 要还原回去
-      this.clear()
-      this.historyUrls = []
-      this.currentHistoryIndex = -1
-      return
+      this.currentHistoryIndex = -1;
+      return;
+    } else if (currentIndex === 0) {
+      // 画了一笔, 要还原回去
+      this.clear();
+      this.historyUrls = [];
+      this.currentHistoryIndex = -1;
+      return;
     }
-    this.currentHistoryIndex -= 1
-    this.historyImage.src = this.historyUrls[this.currentHistoryIndex]
-    this.historyUrls.pop()
+    this.currentHistoryIndex -= 1;
+    this.historyImage.src = this.historyUrls[this.currentHistoryIndex];
+    this.historyUrls.pop();
     this.historyImage.onload = () => {
-      this.clear()
-      this.context.drawImage(this.historyImage, 0, 0)
-    }
+      this.clear();
+      this.context.drawImage(this.historyImage, 0, 0);
+    };
   }
 
   setBackground() {
     if (this.bgImg) {
-      this.context.globalCompositeOperation = 'destination-out'
+      this.context.globalCompositeOperation = "destination-out";
       this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-      this.canvas.style.background = `url(${this.bgImg})`
-      this.canvas.style.backgroundSize = "100% 100%"
-      this.canvas.style.backgroundPosition = "center"
-      this.canvas.style.backgroundRepeat = 'no-repeat'
-      this.context.globalCompositeOperation = 'source-over'
+      this.canvas.style.background = `url(${this.bgImg})`;
+      this.canvas.style.backgroundSize = "100% 100%";
+      this.canvas.style.backgroundPosition = "center";
+      this.canvas.style.backgroundRepeat = "no-repeat";
+      this.context.globalCompositeOperation = "source-over";
     }
   }
 
@@ -219,12 +237,14 @@ class Draw {
           points: this.arrowPoints,
           arrowSize: this.configuration.arrowSize,
           canvasWidth: this.canvasWidth,
-          canvasHeight: this.canvasHeight
+          canvasHeight: this.canvasHeight,
         });
       },
       eraser: (mousePosition) => {
         const { x, y } = mousePosition;
-        this.bgImg ?  this.context.globalCompositeOperation = 'destination-out' : null;
+        this.bgImg
+          ? (this.context.globalCompositeOperation = "destination-out")
+          : null;
         this.context.strokeStyle = this.configuration.canvasBgColor;
         this.context.fillStyle = this.configuration.canvasBgColor;
         this.context.lineWidth = this.configuration.eraserSize;
@@ -248,8 +268,14 @@ class Draw {
       Dom.removeChild(this.container, this.measureEl);
       this.measureEl = null;
     }
-    this.measureEl = Dom.createEl('pre', { styles: { fontSize: `${this.configuration.textFontSize}px`, lineHeight: `${this.configuration.textLineHeight}px`, color: this.configuration.textColor }});
-    Dom.addClass(this.measureEl, '__edb-text-pre');
+    this.measureEl = Dom.createEl("pre", {
+      styles: {
+        fontSize: `${this.configuration.textFontSize}px`,
+        lineHeight: `${this.configuration.textLineHeight}px`,
+        color: this.configuration.textColor,
+      },
+    });
+    Dom.addClass(this.measureEl, "__edb-text-pre");
     Dom.appendChild(this.container, this.measureEl);
   }
 
@@ -257,50 +283,66 @@ class Draw {
     options.font = options.font || '"PingFang SC","Microsoft YaHei","微软雅黑"';
     let string = options.text;
     ctx.save();
-    ctx.textBaseline = 'middle';
+    ctx.textBaseline = "middle";
     ctx.font = `${this.configuration.textFontSize}px/${this.configuration.textLineHeight}px ${options.font}`;
     ctx.fillStyle = this.configuration.textColor;
-    ctx.globalCompositeOperation = 'source-over';
-    string.replace(/<br>/g, '\n').split(/\n/).map((value, index) => {
-      ctx.fillText(value,
-        options.position.x + 2,
-        options.position.y + index * this.configuration.textLineHeight + this.configuration.textLineHeight / 2 + 2
-      );
-    });
+    ctx.globalCompositeOperation = "source-over";
+    string
+      .replace(/<br>/g, "\n")
+      .split(/\n/)
+      .map((value, index) => {
+        ctx.fillText(
+          value,
+          options.position.x + 2,
+          options.position.y +
+            index * this.configuration.textLineHeight +
+            this.configuration.textLineHeight / 2 +
+            2
+        );
+      });
     ctx.restore();
   }
 
   createTextArea(position) {
-    this.mode = null
+    this.mode = null;
 
-    this.boxDom = Dom.createEl('div', {
-      styles: {left: `${position.x}px`, top: `${position.y}px`, lineHeight: `${this.configuration.textLineHeight}px`, fontSize: `${this.configuration.textFontSize}px`}
-    })
-    Dom.addClass(this.boxDom, '__edb-textarea-box')
+    this.boxDom = Dom.createEl("div", {
+      styles: {
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+        lineHeight: `${this.configuration.textLineHeight}px`,
+        fontSize: `${this.configuration.textFontSize}px`,
+      },
+    });
+    Dom.addClass(this.boxDom, "__edb-textarea-box");
 
-    this.textareaEl = Dom.createEl('textarea', { 
-      styles: { lineHeight: `${this.configuration.textLineHeight}px`, color: this.configuration.textColor, fontSize: `${this.configuration.textFontSize}px` }, 
-      props: { placeholder: '请点击输入', autofocus: true }
-    })
-    Dom.addClass(this.textareaEl, '__edb-textarea')
-    
-    Dom.appendChild(this.boxDom, this.textareaEl)
-    Dom.appendChild(this.container, this.boxDom)
+    this.textareaEl = Dom.createEl("textarea", {
+      styles: {
+        lineHeight: `${this.configuration.textLineHeight}px`,
+        color: this.configuration.textColor,
+        fontSize: `${this.configuration.textFontSize}px`,
+      },
+      props: { placeholder: "请点击输入", autofocus: true },
+    });
+    Dom.addClass(this.textareaEl, "__edb-textarea");
+
+    Dom.appendChild(this.boxDom, this.textareaEl);
+    Dom.appendChild(this.container, this.boxDom);
 
     this.textareaEl.onblur = () => {
-      this.mode = null
-      Dom.delAttr(this.textareaEl, 'autofocus')
+      this.mode = null;
+      Dom.delAttr(this.textareaEl, "autofocus");
       this.drawText(this.context, {
         text: this.textareaEl.value,
-        position
-      })
-      Dom.removeChild(this.container, this.boxDom)
-    }
-    this.textareaEl.addEventListener('input', (e)=> {
-      this.measureEl.innerHTML = e.target.value + ' ';
-      this.textareaEl.style.width = this.measureEl.clientWidth + 'px';
-      this.textareaEl.style.height = this.measureEl.clientHeight + 'px';
-    })
+        position,
+      });
+      Dom.removeChild(this.container, this.boxDom);
+    };
+    this.textareaEl.addEventListener("input", (e) => {
+      this.measureEl.innerHTML = e.target.value + " ";
+      this.textareaEl.style.width = this.measureEl.clientWidth + "px";
+      this.textareaEl.style.height = this.measureEl.clientHeight + "px";
+    });
   }
 
   // api
@@ -308,67 +350,46 @@ class Draw {
   config(type, value) {
     this.configuration[type] = value;
     type === "canvasBgColor" && this.clear();
-    (type === "textFontSize" || type === 'textColor' || type === 'textLineHeight') && this.createTextMeasure();
+    (type === "textFontSize" ||
+      type === "textColor" ||
+      type === "textLineHeight") &&
+      this.createTextMeasure();
   }
   setMode(mode) {
-    this.context.globalCompositeOperation = 'source-over';
+    this.context.globalCompositeOperation = "source-over";
     this.context.strokeStyle = this.configuration.lineColor;
     this.context.fillStyle = this.configuration.lineColor;
     this.context.lineWidth = this.configuration.lineWidth;
-    mode === 'eraser' ?  Dom.addClass(this.container, '__edb-eraser-hover') : Dom.removeClass(this.container, '__edb-eraser-hover');
+    mode === "eraser"
+      ? Dom.addClass(this.container, "__edb-eraser-hover")
+      : Dom.removeClass(this.container, "__edb-eraser-hover");
     this.mode = mode;
   }
 
-  // 对于有背景图的, 先画背景图, 再覆盖上 笔迹. 不然生成的数据只有笔迹, 因为toDataURL不会包含背景图的数据
-  getBase64Data(type) {
-    return new Promise((resolve, reject) => {
-      const that = this;
-      const _data = that.canvas.toDataURL(`image/${type}`);
-      const _canvasEl = Dom.createEl('canvas', {
-        styles: {  width: `${that.canvasWidth}px`, height: `${that.canvasHeight}px` },
-        attrs: { width: that.canvasWidth, height: that.canvasHeight }
-      });
-      const _context = _canvasEl.getContext("2d");
-      const img = new Image();
-      img.setAttribute('crossOrigin', 'anonymous');
-      img.src = that.bgImg;
-      img.onerror = () => reject('Image loading failed.');
-      img.onload = function() {
-        _context.drawImage(this, 0, 0, that.canvasWidth, that.canvasHeight);
-        const _img = new Image();
-        _img.setAttribute('crossOrigin', 'anonymous');
-        _img.src = _data;
-        _img.onerror = () => reject('Image loading failed.');
-        _img.onload = function() {
-          _context.drawImage(this, 0, 0, that.canvasWidth, that.canvasHeight);
-          resolve(_canvasEl.toDataURL(`image/${type}`));
-        }
-      }; 
-    })
-  }
-
   generateBase64(type = "png") {
-    return new Promise(async (resolve) => {     
+    return new Promise(async (resolve) => {
       if (this.bgImg) {
-        const data = await this.getBase64Data(type)
-        resolve(data)
+        const data = await getBase64Data(this.canvas, this.bgImg, type);
+        resolve(data);
       } else {
-        resolve (this.canvas.toDataURL(`image/${type}`));
+        resolve(this.canvas.toDataURL(`image/${type}`));
       }
-    })
+    });
   }
 
-  async saveImg(options = {type: 'png', fileName: 'canvas_image'}) {
-    let imgData = null
+  async saveImg(options = { type: "png", fileName: "canvas_image" }) {
+    let imgData = null;
     if (this.bgImg) {
-      imgData = await this.getBase64Data(options.type);
-    } else {  
+      imgData = await getBase64Data(this.canvas, this.bgImg, options.type);
+    } else {
       imgData = this.canvas.toDataURL(`image/${options.type}`);
     }
-    const aEl = Dom.createEl('a', { attrs: {
-      href: this.canvas.toDataURL(`image/${options.type}`),
-      href: imgData,
-      download: `${options.fileName}.${options.type}`}
+    const aEl = Dom.createEl("a", {
+      attrs: {
+        href: this.canvas.toDataURL(`image/${options.type}`),
+        href: imgData,
+        download: `${options.fileName}.${options.type}`,
+      },
     });
     aEl.click();
   }
@@ -377,9 +398,9 @@ class Draw {
     this.context.fillStyle = this.configuration.canvasBgColor;
     this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
     if (this.bgImg) {
-      this.context.globalCompositeOperation = 'destination-out';
+      this.context.globalCompositeOperation = "destination-out";
       this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-      this.context.globalCompositeOperation = 'source-over'
+      this.context.globalCompositeOperation = "source-over";
     }
   }
 }
@@ -387,6 +408,5 @@ class Draw {
 export default Draw;
 
 // todo:
-// 撤回操作. (顶多20步)
 // 事件抽象.
 // ts重构.

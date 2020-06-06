@@ -1,3 +1,5 @@
+import Dom from "./dom";
+
 // about arrow
 export function getArrowPoint(beginPoint, endPoint, par) {
   const slopyAngle = Math.atan2(
@@ -26,7 +28,6 @@ export function getArrowPoint(beginPoint, endPoint, par) {
   return [beginPoint, point4, point2, endPoint, point1, point3];
 }
 
-
 export function drawArrow(ctx, options) {
   const canvasWidth = options.canvasWidth;
   const canvasHeight = options.canvasHeight;
@@ -48,11 +49,7 @@ export function drawArrow(ctx, options) {
     ctx.fill();
   };
   const drawArrow = (ctx, stopPoint, beginPoint, arrowSize) => {
-    const polygonVertex = getArrowPoint(
-      beginPoint,
-      stopPoint,
-      arrowSize
-    );
+    const polygonVertex = getArrowPoint(beginPoint, stopPoint, arrowSize);
     paintArrar(ctx, polygonVertex);
   };
   for (let i = 1; i < options.points.length; i++) {
@@ -70,4 +67,36 @@ export function drawArrow(ctx, options) {
     );
   }
   ctx.restore();
+}
+
+export async function loadImg(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.setAttribute("crossOrigin", "anonymous");
+    img.onerror = reject;
+    img.onload = () => resolve(img);
+    img.src = src;
+  });
+}
+
+// 对于有背景图的, 先画背景图, 再覆盖上 笔迹. 不然生成的数据只有笔迹, toDataURL生成的数据不包含背景图
+export function getBase64Data(canvas, bgImg, type) {
+  return new Promise(async (resolve, reject) => {
+    const painting = canvas.toDataURL(`image/${type}`);
+    const _canvasEl = Dom.createEl("canvas", {
+      styles: {
+        width: `${canvas.width}px`,
+        height: `${canvas.height}px`,
+      },
+      attrs: { width: canvas.width, height: canvas.height },
+    });
+    const _context = _canvasEl.getContext("2d");
+    const bgImgEl = await loadImg(bgImg);
+    !bgImgEl && reject();
+    _context.drawImage(bgImgEl, 0, 0, canvas.width, canvas.height);
+    const paintEl = await loadImg(painting);
+    !paintEl && reject();
+    _context.drawImage(paintEl, 0, 0, canvas.width, canvas.height);
+    resolve(_canvasEl.toDataURL(`image/${type}`));
+  });
 }
