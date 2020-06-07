@@ -26,7 +26,7 @@ git clone this repository and open `example/index.html` in your browser
 ### Initialize
 
 ```html
-<script type="text/javascript" src="//{you path to the dist file}/dist/sketch.js"></script>
+<script type="text/javascript" src="//{you path to the dist file}/dist/easy-drawing-board.js"></script>
 <style>.container { width: 500px; height: 500px; }</style>
 <div class="container"></div>
 ```
