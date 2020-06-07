@@ -64,6 +64,7 @@ class Draw {
     const { x, y } = this.canvas.getBoundingClientRect();
     this.c_offsetLeft = x;
     this.c_offsetTop = y;
+    this.context.lineCap = 'round';
     this.clear();
     this.setBackground();
     this.createTextMeasure();
@@ -336,7 +337,7 @@ class Draw {
       type === "textLineHeight") &&
       this.createTextMeasure();
   }
-  
+
   setMode(mode) {
     this.context.globalCompositeOperation = "source-over";
     this.context.strokeStyle = this.configuration.lineColor;

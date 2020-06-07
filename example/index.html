@@ -18,7 +18,7 @@
         color: #fff;
         padding: 10px 20px;
         height: 40px;
-        font-size: 20px;
+        font-size: 16px;
         line-height: 20px;
         text-align: center;
         border-radius: 10px;
@@ -38,18 +38,23 @@
       }
       .eraserSize,
       .arrowSize,
-      .fontSize,
+      .textFontSize,
       .textLineHeight,
-      .currLineWidth {
+      .lineWidth {
         display: inline-block;
         min-width: 40px !important;
+      }
+      label {
+        margin-right: 5px;
+      }
+      #operations, #operations2 {
+        display: inline-block;
       }
     </style>
     <script src="../dist/easy-drawing-board.js"></script>
   </head>
   <body>
     <div id="operations">
-      <!-- id 关联到事件绑定 -->
       <button class="btn" id="clear">clear</button>
       <button class="btn" id="eraser">橡皮擦</button>
       <button class="btn" id="pencil">铅笔</button>
@@ -60,104 +65,36 @@
       <button class="btn" id="text">文字</button>
     </div>
     <div>
-      <label>线条颜色 <input onchange="colorChange(event)" id="color" type="color" value="#f00f00"></label>
-      &nbsp;&nbsp;&nbsp;
-      <label>线条粗细: <i class="currLineWidth">1</i><input type="range" onchange="rangeChange(event)" min="1" max="50" value="1"></label>
-      <label>箭头大小: <i class="arrowSize">15</i><input type="range" onchange="rangeChange4(event)" min="10" max="30" value="15"></label>
-      <label>橡皮擦大小: <i class="eraserSize">10</i><input type="range" onchange="rangeChange5(event)" min="1" max="30" value="10"></label>
+      <label>线条颜色 <input id="lineColor" type="color" value="#f00f00"></label>
+      <label>线条粗细: <i class="lineWidth">1</i><input id="lineWidth" type="range" min="1" max="50" value="1"></label>
+      <label>箭头大小: <i class="arrowSize">15</i><input id="arrowSize" type="range" min="10" max="30" value="15"></label>
+      <label>橡皮擦大小: <i class="eraserSize">10</i><input id="eraserSize" type="range" min="1" max="30" value="10"></label>
     </div>
     <div>
-      <label>文字颜色 <input onchange="colorChange2(event)" id="textColor" type="color" value="#f00f00"></label>
-      &nbsp;&nbsp;&nbsp;
-      <label>文字大小: <i class="fontSize">16</i><input type="range" onchange="rangeChange2(event)" min="12" max="22" value="16"></label>
-      <label>文字行高: <i class="textLineHeight">20</i><input type="range" onchange="rangeChange3(event)" min="16" max="30" value="20"></label>
+      <label>文字颜色 <input id="textColor" type="color" value="#f00f00"></label>
+      <label>文字大小: <i class="textFontSize">16</i><input id="textFontSize" type="range" min="12" max="22" value="16"></label>
+      <label>文字行高: <i class="textLineHeight">20</i><input id="textLineHeight" type="range" min="16" max="30" value="20"></label>
     </div>
     <div>
-      <label>背景颜色 <input onchange="colorChange3(event)" id="bgColor" type="color" value="#ffffff"></label>
+      <label>背景颜色 <input id="canvasBgColor" type="color" value="#ffffff"></label>
     </div>
-    <div>
-      <button class="btn" onclick="generateBase64()">export base64 data</button>
-      <button class="btn" onclick="saveImg()">save</button>
-      <button class="btn" onclick="undo()">撤销</button>
+    <div id="operations2">
+      <button class="btn" id="generateBase64">export base64 data</button>
+      <button class="btn" id="saveImg">save</button>
+      <button class="btn" id="undo">撤销</button>
     </div>
-    <p>左图: 用于对进行图片批注; </p>
     <br />
     <div class="container"></div>
     <div class="container2"></div>
   </body>
   <script>
-    let draw = null, draw2 = null;
-    function rangeChange(e) {
-      let dom = document.getElementsByClassName('currLineWidth')[0];
-      dom.innerHTML = e.target.value
-      draw && draw.config('lineWidth', e.target.value)
-      draw2 && draw2.config('lineWidth', e.target.value)
-    }
-    function rangeChange2(e) {
-      let dom = document.getElementsByClassName('fontSize')[0];
-      dom.innerHTML = e.target.value
-      draw && draw.config('textFontSize', e.target.value)
-      draw2 && draw2.config('textFontSize', e.target.value)
-    }
-    function rangeChange3(e) {
-      let dom = document.getElementsByClassName('textLineHeight')[0];
-      dom.innerHTML = e.target.value
-      draw && draw.config('textLineHeight', e.target.value)
-      draw2 && draw2.config('textLineHeight', e.target.value)
-    }
-    function rangeChange4(e) {
-      let dom = document.getElementsByClassName('arrowSize')[0];
-      dom.innerHTML = e.target.value
-      draw && draw.config('arrowSize', e.target.value)
-      draw2 && draw2.config('arrowSize', e.target.value)
-    }
-    function rangeChange5(e) {
-      let dom = document.getElementsByClassName('eraserSize')[0];
-      dom.innerHTML = e.target.value
-      draw && draw.config('eraserSize', e.target.value)
-      draw2 && draw2.config('eraserSize', e.target.value)
-    }
-    function colorChange(e) {
-      let dom = document.getElementById('color');
-      draw && draw.config('lineColor', e.target.value)
-      draw2 && draw2.config('lineColor', e.target.value)
-    }
-
-    function colorChange2(e) {
-      let dom = document.getElementById('textColor');
-      draw && draw.config('textColor', e.target.value)
-    }
-
-    function colorChange3(e) {
-      let dom = document.getElementById('bgColor');
-      draw2 && draw2.config('canvasBgColor', e.target.value)
-    }
-
-
-    function generateBase64() {
-      draw.generateBase64().then(res => {
-        console.log('data1::', res)
-      })
-      draw2.generateBase64().then(res => {
-        console.log('data2::', res)
-      })
-      alert('已输出至于 控制台')
-    }
-
-    function saveImg() {
-      draw && draw.saveImg()
-      draw2 && draw2.saveImg()
-    }
-    
-    function undo() {
-      draw && draw.undo()
-      draw2 && draw2.undo()
-    }
-
     window.onload = function () {
+      let draw = null, draw2 = null;
       const container = document.getElementsByClassName('container')[0];
       const operations = document.getElementById('operations');
+      const operations2 = document.getElementById('operations2');
       operations.addEventListener('click', function(e) {
+        if (e.target.nodeName !== 'BUTTON') return
         let mode = e.target.id
         if (mode === 'clear') {
           draw.clear()
@@ -166,7 +103,46 @@
           draw.setMode(mode)
           draw2.setMode(mode)
         }
-      })
+      }, false)
+      operations2.addEventListener('click', function(e) {
+        if (e.target.nodeName !== 'BUTTON') return
+        let event = e.target.id
+        if (event === 'generateBase64') {
+          draw.generateBase64().then(res => {
+            console.log('data1::', res)
+          })
+          draw2.generateBase64().then(res => {
+            console.log('data2::', res)
+          })
+          alert('已输出至于 控制台')
+        } else {
+          draw[event]()
+          draw2[event]()
+        }
+      }, false)
+      const inputEls = document.getElementsByTagName('input');
+      Array.prototype.slice.call(inputEls).forEach(ele => {
+        ele.addEventListener('change', function(e) {
+          switch (e.target.id) {
+            case "lineColor":
+            case "textColor":
+            case "canvasBgColor":
+              draw && draw.config(e.target.id, e.target.value)
+              draw2 && draw2.config(e.target.id, e.target.value)
+              break;
+            case "lineWidth":
+            case "eraserSize":
+            case "arrowSize":
+            case "textFontSize":
+            case "textLineHeight":
+              let dom = document.getElementsByClassName(e.target.id)[0];
+              dom.innerHTML = e.target.value
+              draw && draw.config(e.target.id, e.target.value)
+              draw2 && draw2.config(e.target.id, e.target.value)
+              break;  
+          }
+        })
+      });
       const options = {
         container,
         bgImg: 'http://image.kaier33.top/ori.jpg'
