@@ -20,7 +20,9 @@ Using script tag
 
 [live example](https://codepen.io/kaierchou/project/editor/AEepEK#)  
 or  
-git clone this repository then open `example/index.html` in your browser
+git clone this repository then open `example/index.html` in your browser  
+
+![example]()
 
 ## Usage
 ### Initialize
