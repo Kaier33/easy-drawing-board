@@ -18,11 +18,15 @@ Using script tag
 
 ## Play
 
-[live example](https://codepen.io/kaierchou/project/editor/AEepEK#)  
+[live example](https://codepen.io/kaierchou/project/editor/AEepEK#)    
+
 or  
+
 git clone this repository then open `example/index.html` in your browser  
 
-![example]()
+![example1](https://user-images.githubusercontent.com/24623866/84254771-43181900-ab44-11ea-8621-8a9757d167bd.gif)
+
+![example1](https://user-images.githubusercontent.com/24623866/84254776-44494600-ab44-11ea-8c4d-3ada333075a0.gif)
 
 ## Usage
 ### Initialize
