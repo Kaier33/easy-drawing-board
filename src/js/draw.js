@@ -34,11 +34,12 @@ class Draw {
       textFontSize,
       textLineHeight,
       textColor,
+      bgImg
     };
     this.arrowPoints = [];
     this.isDrawing = false;
     this.image = new Image();
-    this.bgImg = bgImg;
+    // this.bgImg = bgImg;
     this.textareaEl = null;
     this.measureEl = null;
     // cache
@@ -160,10 +161,10 @@ class Draw {
   }
 
   setBackground() {
-    if (this.bgImg) {
+    if (this.configuration.bgImg) {
       this.context.globalCompositeOperation = "destination-out";
       this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-      this.canvas.style.background = `url(${this.bgImg})`;
+      this.canvas.style.background = `url(${this.configuration.bgImg})`;
       this.canvas.style.backgroundSize = "100% 100%";
       this.canvas.style.backgroundPosition = "center";
       this.canvas.style.backgroundRepeat = "no-repeat";
@@ -224,7 +225,7 @@ class Draw {
       },
       eraser: (mousePosition) => {
         const { x, y } = mousePosition;
-        this.bgImg
+        this.configuration.bgImg
           ? (this.context.globalCompositeOperation = "destination-out")
           : null;
         this.context.strokeStyle = this.configuration.canvasBgColor;
@@ -327,11 +328,19 @@ class Draw {
     });
   }
 
+  resetBgImg() {
+    this.historyUrls = [];
+    this.currentHistoryIndex = -1;
+    this.clear();
+    this.setBackground();
+  }
+
   // api
   // Change the default setting
   config(type, value) {
     this.configuration[type] = value;
-    type === "canvasBgColor" && this.clear();
+    type === "canvasBgColor"  && this.clear();
+    type === 'bgImg' && this.resetBgImg();
     (type === "textFontSize" ||
       type === "textColor" ||
       type === "textLineHeight") &&
@@ -372,8 +381,8 @@ class Draw {
 
   generateBase64(type = "png") {
     return new Promise(async (resolve) => {
-      if (this.bgImg) {
-        const data = await getBase64Data(this.canvas, this.bgImg, type);
+      if (this.configuration.bgImg) {
+        const data = await getBase64Data(this.canvas, this.configuration.bgImg, type);
         resolve(data);
       } else {
         resolve(this.canvas.toDataURL(`image/${type}`));
@@ -383,8 +392,8 @@ class Draw {
 
   async saveImg(options = { type: "png", fileName: "canvas_image" }) {
     let imgData = null;
-    if (this.bgImg) {
-      imgData = await getBase64Data(this.canvas, this.bgImg, options.type);
+    if (this.configuration.bgImg) {
+      imgData = await getBase64Data(this.canvas, this.configuration.bgImg, options.type);
     } else {
       imgData = this.canvas.toDataURL(`image/${options.type}`);
     }
@@ -400,7 +409,7 @@ class Draw {
   clear() {
     this.context.fillStyle = this.configuration.canvasBgColor;
     this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-    if (this.bgImg) {
+    if (this.configuration.bgImg) {
       this.context.globalCompositeOperation = "destination-out";
       this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
       this.context.globalCompositeOperation = "source-over";

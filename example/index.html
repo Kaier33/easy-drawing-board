@@ -83,6 +83,7 @@
       <button class="btn" id="saveImg">save</button>
       <button class="btn" id="undo">撤销</button>
     </div>
+    <button class="btn" id="reBgImg">替换背景图片</button>
     <br />
     <div class="container"></div>
     <div class="container2"></div>
@@ -119,6 +120,10 @@
           draw[event]()
           draw2[event]()
         }
+      }, false)
+      const reBgImgBtn = document.getElementById('reBgImg')
+      reBgImgBtn.addEventListener('click', function() {
+        draw.config('bgImg', 'http://image.kaier33.top/the-legend-of-zelda-breath-of-the-wild-link-princess-zelda-anime-style-games.jpg')
       }, false)
       const inputEls = document.getElementsByTagName('input');
       Array.prototype.slice.call(inputEls).forEach(ele => {
