@@ -1,4 +1,4 @@
-import { drawArrow, getBase64Data } from "./utils";
+import { drawArrow, getBase64Data, windowToCanvas } from "./utils";
 import Dom from "./dom";
 class Draw {
   constructor(options) {
@@ -63,6 +63,7 @@ class Draw {
 
   init() {
     const { x, y } = this.canvas.getBoundingClientRect();
+    this.canvas_style = window.getComputedStyle(this.canvas);
     this.c_offsetLeft = x;
     this.c_offsetTop = y;
     this.context.lineCap = 'round';
@@ -80,8 +81,12 @@ class Draw {
     this.image.src = this.canvas.toDataURL("image/png");
     const { clientX, clientY } = event;
     // 鼠标按下时, canvas的初始坐标 (会随着move而变)
-    this.originX = clientX - this.c_offsetLeft;
-    this.originY = clientY - this.c_offsetTop;
+    // this.originX = clientX - this.c_offsetLeft;
+    // this.originY = clientY - this.c_offsetTop;
+    const { x, y } = windowToCanvas(this.canvas, this.canvas_style, clientX, clientY);
+    this.originX = x;
+    this.originY = y;
+
     // 记录初始按下的坐标
     this.ft_originX = this.originX;
     this.ft_originY = this.originY;
@@ -102,9 +107,9 @@ class Draw {
       const { clientX, clientY } = event;
 
       // 鼠标移动时, canvas中的实时坐标
-      const x = clientX - this.c_offsetLeft;
-      const y = clientY - this.c_offsetTop;
-
+      // const x = clientX - this.c_offsetLeft;
+      // const y = clientY - this.c_offsetTop;
+      const { x, y } = windowToCanvas(this.canvas, this.canvas_style, clientX, clientY);
       // 默认是鼠标刚按下的坐标.
       let newOriginX = this.originX,
         newOriginY = this.originY;

@@ -1,6 +1,6 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('core-js/modules/es.array.concat'), require('core-js/modules/es.array.map'), require('core-js/modules/es.array.slice'), require('core-js/modules/es.object.to-string'), require('core-js/modules/es.promise'), require('core-js/modules/es.regexp.exec'), require('core-js/modules/es.string.replace'), require('core-js/modules/es.string.split'), require('core-js/modules/es.array.fill'), require('core-js/modules/es.object.keys')) :
-  typeof define === 'function' && define.amd ? define(['core-js/modules/es.array.concat', 'core-js/modules/es.array.map', 'core-js/modules/es.array.slice', 'core-js/modules/es.object.to-string', 'core-js/modules/es.promise', 'core-js/modules/es.regexp.exec', 'core-js/modules/es.string.replace', 'core-js/modules/es.string.split', 'core-js/modules/es.array.fill', 'core-js/modules/es.object.keys'], factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('core-js/modules/es.array.concat'), require('core-js/modules/es.array.map'), require('core-js/modules/es.array.slice'), require('core-js/modules/es.object.to-string'), require('core-js/modules/es.promise'), require('core-js/modules/es.regexp.exec'), require('core-js/modules/es.string.replace'), require('core-js/modules/es.string.split'), require('core-js/modules/es.array.fill'), require('core-js/modules/es.number.constructor'), require('core-js/modules/es.object.keys')) :
+  typeof define === 'function' && define.amd ? define(['core-js/modules/es.array.concat', 'core-js/modules/es.array.map', 'core-js/modules/es.array.slice', 'core-js/modules/es.object.to-string', 'core-js/modules/es.promise', 'core-js/modules/es.regexp.exec', 'core-js/modules/es.string.replace', 'core-js/modules/es.string.split', 'core-js/modules/es.array.fill', 'core-js/modules/es.number.constructor', 'core-js/modules/es.object.keys'], factory) :
   (global = global || self, global.EasyDrawingBoard = factory());
 }(this, (function () { 'use strict';
 
@@ -1017,6 +1017,23 @@
       };
     }());
   }
+  //   const bbox = canvas.getBoundingClientRect();
+  //   const style = window.getComputedStyle(canvas);
+  //   return {
+  //       x: (x - bbox.left - parseInt(style.paddingLeft) - parseInt(style.borderLeft))
+  //           * (canvas.width / parseInt(style.width)),
+  //       y: (y - bbox.top - parseInt(style.paddingTop) - parseInt(style.borderTop))
+  //           * (canvas.height / parseInt(style.height))
+  //   };
+  // }
+
+  function windowToCanvas(canvas, canvas_styles, x, y) {
+    var cbox = canvas.getBoundingClientRect();
+    return {
+      x: (x - cbox.left - parseInt(canvas_styles.paddingLeft) - parseInt(canvas_styles.borderLeft)) * (canvas.width / parseInt(canvas_styles.width)),
+      y: (y - cbox.top - parseInt(canvas_styles.paddingTop) - parseInt(canvas_styles.borderTop)) * (canvas.height / parseInt(canvas_styles.height))
+    };
+  }
 
   var Draw = /*#__PURE__*/function () {
     function Draw(options) {
@@ -1104,6 +1121,7 @@
             x = _this$canvas$getBound.x,
             y = _this$canvas$getBound.y;
 
+        this.canvas_style = window.getComputedStyle(this.canvas);
         this.c_offsetLeft = x;
         this.c_offsetTop = y;
         this.context.lineCap = 'round';
@@ -1126,11 +1144,15 @@
         this.image.src = this.canvas.toDataURL("image/png");
         var clientX = event.clientX,
             clientY = event.clientY; // 鼠标按下时, canvas的初始坐标 (会随着move而变)
+        // this.originX = clientX - this.c_offsetLeft;
+        // this.originY = clientY - this.c_offsetTop;
 
-        this.originX = clientX - this.c_offsetLeft;
-        this.originY = clientY - this.c_offsetTop; // 记录初始按下的坐标
-        // const ft_originX = this.originX;
-        // const ft_originY = this.originY;
+        var _windowToCanvas = windowToCanvas(this.canvas, this.canvas_style, clientX, clientY),
+            x = _windowToCanvas.x,
+            y = _windowToCanvas.y;
+
+        this.originX = x;
+        this.originY = y; // 记录初始按下的坐标
 
         this.ft_originX = this.originX;
         this.ft_originY = this.originY;
@@ -1143,8 +1165,7 @@
           x: this.originX,
           y: this.originY
         });
-        this.mode === "text" && // this.createTextArea({ x: ft_originX, y: ft_originY });
-        this.createTextArea({
+        this.mode === "text" && this.createTextArea({
           x: this.ft_originX,
           y: this.ft_originY
         });
@@ -1155,9 +1176,13 @@
         if (this.isDrawing) {
           var clientX = event.clientX,
               clientY = event.clientY; // 鼠标移动时, canvas中的实时坐标
+          // const x = clientX - this.c_offsetLeft;
+          // const y = clientY - this.c_offsetTop;
 
-          var x = clientX - this.c_offsetLeft;
-          var y = clientY - this.c_offsetTop; // 默认是鼠标刚按下的坐标.
+          var _windowToCanvas2 = windowToCanvas(this.canvas, this.canvas_style, clientX, clientY),
+              x = _windowToCanvas2.x,
+              y = _windowToCanvas2.y; // 默认是鼠标刚按下的坐标.
+
 
           var newOriginX = this.originX,
               newOriginY = this.originY; // 计算 横/纵 坐标到初始点的距离
@@ -1246,13 +1271,10 @@
           straightLine: function straightLine(mousePosition) {
             var x = mousePosition.x,
                 y = mousePosition.y,
-                originX = mousePosition.originX,
-                originY = mousePosition.originY,
                 ft_originX = mousePosition.ft_originX,
                 ft_originY = mousePosition.ft_originY;
 
-            _this2.reDraw(); // this.context.moveTo(originX, originY);
-
+            _this2.reDraw();
 
             _this2.context.moveTo(ft_originX, ft_originY);
 
