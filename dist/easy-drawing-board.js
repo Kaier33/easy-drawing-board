@@ -1,6 +1,6 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('core-js/modules/es.array.concat'), require('core-js/modules/es.array.map'), require('core-js/modules/es.array.slice'), require('core-js/modules/es.object.to-string'), require('core-js/modules/es.promise'), require('core-js/modules/es.regexp.exec'), require('core-js/modules/es.string.replace'), require('core-js/modules/es.string.split'), require('core-js/modules/es.array.fill'), require('core-js/modules/es.number.constructor'), require('core-js/modules/es.object.keys')) :
-  typeof define === 'function' && define.amd ? define(['core-js/modules/es.array.concat', 'core-js/modules/es.array.map', 'core-js/modules/es.array.slice', 'core-js/modules/es.object.to-string', 'core-js/modules/es.promise', 'core-js/modules/es.regexp.exec', 'core-js/modules/es.string.replace', 'core-js/modules/es.string.split', 'core-js/modules/es.array.fill', 'core-js/modules/es.number.constructor', 'core-js/modules/es.object.keys'], factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('core-js/modules/es.array.concat'), require('core-js/modules/es.array.map'), require('core-js/modules/es.array.slice'), require('core-js/modules/es.object.to-string'), require('core-js/modules/es.promise'), require('core-js/modules/es.regexp.exec'), require('core-js/modules/es.string.replace'), require('core-js/modules/es.string.split'), require('core-js/modules/es.array.fill'), require('core-js/modules/es.object.keys')) :
+  typeof define === 'function' && define.amd ? define(['core-js/modules/es.array.concat', 'core-js/modules/es.array.map', 'core-js/modules/es.array.slice', 'core-js/modules/es.object.to-string', 'core-js/modules/es.promise', 'core-js/modules/es.regexp.exec', 'core-js/modules/es.string.replace', 'core-js/modules/es.string.split', 'core-js/modules/es.array.fill', 'core-js/modules/es.object.keys'], factory) :
   (global = global || self, global.EasyDrawingBoard = factory());
 }(this, (function () { 'use strict';
 
@@ -1017,16 +1017,6 @@
       };
     }());
   }
-  //   const bbox = canvas.getBoundingClientRect();
-  //   const style = window.getComputedStyle(canvas);
-  //   return {
-  //       x: (x - bbox.left - parseInt(style.paddingLeft) - parseInt(style.borderLeft))
-  //           * (canvas.width / parseInt(style.width)),
-  //       y: (y - bbox.top - parseInt(style.paddingTop) - parseInt(style.borderTop))
-  //           * (canvas.height / parseInt(style.height))
-  //   };
-  // }
-
   function windowToCanvas(canvas, canvas_styles, x, y) {
     var cbox = canvas.getBoundingClientRect();
     return {
@@ -1065,8 +1055,6 @@
       this.mode = "pencil";
       this.canvasWidth = this.canvas.width;
       this.canvasHeight = this.canvas.height;
-      this.c_offsetLeft = 0;
-      this.c_offsetTop = 0;
       this.originX = null;
       this.originY = null;
       this.configuration = {
@@ -1117,13 +1105,7 @@
       value: function init() {
         var _this = this;
 
-        var _this$canvas$getBound = this.canvas.getBoundingClientRect(),
-            x = _this$canvas$getBound.x,
-            y = _this$canvas$getBound.y;
-
         this.canvas_style = window.getComputedStyle(this.canvas);
-        this.c_offsetLeft = x;
-        this.c_offsetTop = y;
         this.context.lineCap = 'round';
         this.clear();
         this.setBackground();
@@ -1144,8 +1126,6 @@
         this.image.src = this.canvas.toDataURL("image/png");
         var clientX = event.clientX,
             clientY = event.clientY; // 鼠标按下时, canvas的初始坐标 (会随着move而变)
-        // this.originX = clientX - this.c_offsetLeft;
-        // this.originY = clientY - this.c_offsetTop;
 
         var _windowToCanvas = windowToCanvas(this.canvas, this.canvas_style, clientX, clientY),
             x = _windowToCanvas.x,
@@ -1176,8 +1156,6 @@
         if (this.isDrawing) {
           var clientX = event.clientX,
               clientY = event.clientY; // 鼠标移动时, canvas中的实时坐标
-          // const x = clientX - this.c_offsetLeft;
-          // const y = clientY - this.c_offsetTop;
 
           var _windowToCanvas2 = windowToCanvas(this.canvas, this.canvas_style, clientX, clientY),
               x = _windowToCanvas2.x,

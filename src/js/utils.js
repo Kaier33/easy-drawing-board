@@ -101,32 +101,6 @@ export function getBase64Data(canvas, bgImg, type) {
   });
 }
 
-export function getOffset(el) {
-  let top = 0, left = 0;
-  const elStyle = getComputedStyle(el)
-  top += Number(elStyle['borderTopWidth'].replace('px', '')) || 0
-  left += Number(elStyle['borderLeftWidth'].replace('px', '')) || 0
-  top += Number(elStyle['paddingTop'].replace('px', '')) || 0
-  left += Number(elStyle['paddingLeft'].replace('px', '')) || 0
-  do {
-    top += el.offsetTop;
-    left += el.offsetLeft;
-  }
-  while(el = el.offsetParent);
-  return { top, left }
-}
-
-// function windowToCanvas(canvas, x, y) {
-//   const bbox = canvas.getBoundingClientRect();
-//   const style = window.getComputedStyle(canvas);
-//   return {
-//       x: (x - bbox.left - parseInt(style.paddingLeft) - parseInt(style.borderLeft))
-//           * (canvas.width / parseInt(style.width)),
-//       y: (y - bbox.top - parseInt(style.paddingTop) - parseInt(style.borderTop))
-//           * (canvas.height / parseInt(style.height))
-//   };
-// }
-
 export function windowToCanvas(canvas, canvas_styles, x, y) {
   const cbox = canvas.getBoundingClientRect();
   return {
