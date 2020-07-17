@@ -85,6 +85,8 @@
     </div>
     <button class="btn" id="reBgImg">替换背景图片</button>
     <br />
+    <button class="btn" id="this">this</button>
+    <br>
     <div class="container"></div>
     <div class="container2"></div>
   </body>
@@ -156,6 +158,10 @@
 
       const container2 = document.getElementsByClassName('container2')[0];
       draw2 = new EasyDrawingBoard({container: container2});
+
+      document.getElementById('this').addEventListener('click', function() {
+        console.log(draw)
+      })
     };
   </script>
   

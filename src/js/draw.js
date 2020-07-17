@@ -83,8 +83,8 @@ class Draw {
     this.originX = clientX - this.c_offsetLeft;
     this.originY = clientY - this.c_offsetTop;
     // 记录初始按下的坐标
-    const ft_originX = this.originX;
-    const ft_originY = this.originY;
+    this.ft_originX = this.originX;
+    this.ft_originY = this.originY;
 
     this.context.moveTo(this.originX, this.originY);
     this.context.lineWidth = this.configuration.lineWidth;
@@ -94,7 +94,7 @@ class Draw {
 
     this.mode === "arrow" && this.saveArrowPoint({ x: this.originX, y: this.originY });
     this.mode === "text" &&
-    this.createTextArea({ x: ft_originX, y: ft_originY });
+    this.createTextArea({ x: this.ft_originX, y: this.ft_originY });
   }
 
   mouseMove(event) {
@@ -128,6 +128,8 @@ class Draw {
         newOriginY,
         distanceX,
         distanceY,
+        ft_originX: this.ft_originX,
+        ft_originY: this.ft_originY
       };
       let mousemoveEvent = this.handleMousemove();
       let currMousemoveEvent = mousemoveEvent[this.mode];
@@ -180,10 +182,9 @@ class Draw {
         this.context.stroke();
       },
       straightLine: (mousePosition) => {
-        let { x, y, originX, originY } = mousePosition;
+        let { x, y, ft_originX, ft_originY } = mousePosition;
         this.reDraw();
-
-        this.context.moveTo(originX, originY);
+        this.context.moveTo(ft_originX, ft_originY);
         this.context.lineTo(x, y);
         this.context.stroke();
       },
