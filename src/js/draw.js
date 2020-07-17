@@ -285,7 +285,8 @@ class Draw {
 
   createTextArea(position) {
     this.mode = null;
-
+    if (this.boxDom) Dom.removeChild(this.container, this.boxDom);
+    console.log('position::', position)
     this.boxDom = Dom.createEl("div", {
       styles: {
         left: `${position.x}px`,
@@ -317,6 +318,7 @@ class Draw {
         position,
       });
       Dom.removeChild(this.container, this.boxDom);
+      this.boxDom = null
     };
     this.textareaEl.addEventListener("input", (e) => {
       this.measureEl.innerHTML = e.target.value + " ";
