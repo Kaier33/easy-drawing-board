@@ -53,7 +53,7 @@ class Draw {
         height: `${container.clientHeight}px`,
         width: `${container.clientWidth}px`,
       },
-      attrs: { width: container.clientHeight, height: container.clientWidth },
+      attrs: { width: container.clientWidth, height: container.clientHeight },
     });
     Dom.appendChild(container, canvasEl);
     return canvasEl;
@@ -286,7 +286,6 @@ class Draw {
   createTextArea(position) {
     this.mode = null;
     if (this.boxDom) Dom.removeChild(this.container, this.boxDom);
-    console.log('position::', position)
     this.boxDom = Dom.createEl("div", {
       styles: {
         left: `${position.x}px`,
