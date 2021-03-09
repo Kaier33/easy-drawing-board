@@ -302,7 +302,7 @@ class Draw {
         color: this.configuration.textColor,
         fontSize: `${this.configuration.textFontSize}px`,
       },
-      props: { placeholder: "请点击输入", autofocus: true },
+      props: { placeholder: "Type here...", autofocus: true },
     });
     Dom.addClass(this.textareaEl, "__edb-textarea");
 
