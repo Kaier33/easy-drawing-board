@@ -110,3 +110,8 @@ export function windowToCanvas(canvas, canvas_styles, x, y) {
           * (canvas.height / parseInt(canvas_styles.height))
   };
 }
+
+// detect language
+export function detectLanguage() {
+  return navigator.language.indexOf('zh') !== -1 ? '请点击输入' : 'Type here...'
+}

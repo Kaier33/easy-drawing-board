@@ -1,4 +1,4 @@
-import { drawArrow, getBase64Data, windowToCanvas } from "./utils";
+import { drawArrow, getBase64Data, windowToCanvas, detectLanguage } from "./utils";
 import Dom from "./dom";
 class Draw {
   constructor(options) {
@@ -13,6 +13,7 @@ class Draw {
       textFontSize = 16,
       textLineHeight = 20,
       textColor = "#f00",
+      textareaPlaceholder = detectLanguage()
     } = options;
     if (!container) throw Error("No container element were found...");
     this.container = container;
@@ -32,7 +33,8 @@ class Draw {
       textFontSize,
       textLineHeight,
       textColor,
-      bgImg
+      bgImg,
+      textareaPlaceholder
     };
     this.arrowPoints = [];
     this.isDrawing = false;
@@ -302,7 +304,7 @@ class Draw {
         color: this.configuration.textColor,
         fontSize: `${this.configuration.textFontSize}px`,
       },
-      props: { placeholder: "Type here...", autofocus: true },
+      props: { placeholder: this.configuration.textareaPlaceholder, autofocus: true },
     });
     Dom.addClass(this.textareaEl, "__edb-textarea");
 

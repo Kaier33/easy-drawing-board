@@ -17,8 +17,8 @@
         margin: 10px;
         color: #fff;
         padding: 10px 20px;
-        height: 40px;
-        font-size: 16px;
+        /* height: 40px; */
+        font-size: 14px;
         line-height: 20px;
         text-align: center;
         border-radius: 10px;
@@ -50,7 +50,9 @@
         min-width: 40px !important;
       }
       label {
-        margin-right: 5px;
+        margin-right: 10px;
+        font-size: 14px;
+        line-height: 10px;
       }
       #operations, #operations2 {
         display: inline-block;
@@ -60,35 +62,37 @@
   </head>
   <body>
     <div id="operations">
-      <button class="btn" id="clear">clear</button>
-      <button class="btn" id="eraser">橡皮擦</button>
-      <button class="btn" id="pencil">铅笔</button>
-      <button class="btn" id="straightLine">直线</button>
-      <button class="btn" id="rect">矩形</button>
-      <button class="btn" id="circle">圆形</button>
-      <button class="btn" id="arrow">箭头</button>
-      <button class="btn" id="text">文字</button>
+      <button class="btn" id="clear">清空 <br/> clear</button>
+      <button class="btn" id="eraser">橡皮擦 <br/> eraser</button>
+      <button class="btn" id="pencil">铅笔 <br/> pencil</button>
+      <button class="btn" id="straightLine">直线 <br/> straightLine </button>
+      <button class="btn" id="rect">矩形 <br/> rectangular</button>
+      <button class="btn" id="circle">圆形 <br> circle</button>
+      <button class="btn" id="arrow">箭头 <br> arrow</button>
+      <button class="btn" id="text">文字 <br> text </button>
     </div>
     <div>
-      <label>线条颜色 <input id="lineColor" type="color" value="#f00f00"></label>
-      <label>线条粗细: <i class="lineWidth">1</i><input id="lineWidth" type="range" min="1" max="50" value="1"></label>
-      <label>箭头大小: <i class="arrowSize">15</i><input id="arrowSize" type="range" min="10" max="30" value="15"></label>
-      <label>橡皮擦大小: <i class="eraserSize">10</i><input id="eraserSize" type="range" min="1" max="30" value="10"></label>
+      <label>线条颜色 lineColor <input id="lineColor" type="color" value="#f00f00"></label>
+      <label>线条粗细 lineWidth: <i class="lineWidth">1</i><input id="lineWidth" type="range" min="1" max="50" value="1"></label>
+      <label>箭头大小 arrowSize: <i class="arrowSize">15</i><input id="arrowSize" type="range" min="10" max="30" value="15"></label>
+      <label>橡皮擦大小 eraserSize: <i class="eraserSize">10</i><input id="eraserSize" type="range" min="1" max="30" value="10"></label> 
     </div>
+    <br>
     <div>
-      <label>文字颜色 <input id="textColor" type="color" value="#f00f00"></label>
-      <label>文字大小: <i class="textFontSize">16</i><input id="textFontSize" type="range" min="12" max="22" value="16"></label>
-      <label>文字行高: <i class="textLineHeight">20</i><input id="textLineHeight" type="range" min="16" max="30" value="20"></label>
+      <label>文字颜色 textColor <input id="textColor" type="color" value="#f00f00"></label>
+      <label>文字大小 textFontSize: <i class="textFontSize">16</i><input id="textFontSize" type="range" min="12" max="22" value="16"></label>
+      <label>文字行高 textLineHeight: <i class="textLineHeight">20</i><input id="textLineHeight" type="range" min="16" max="30" value="20"></label>
     </div>
+    <br>
     <div>
-      <label>背景颜色 <input id="canvasBgColor" type="color" value="#ffffff"></label>
+      <label>背景颜色 canvasBgColor <input id="canvasBgColor" type="color" value="#ffffff"></label>
     </div>
     <div id="operations2">
       <button class="btn" id="generateBase64">export base64 data</button>
       <button class="btn" id="saveImg">save</button>
-      <button class="btn" id="undo">撤销</button>
+      <button class="btn" id="undo">撤销 undo</button>
     </div>
-    <button class="btn" id="reBgImg">替换背景图片</button>
+    <button class="btn" id="reBgImg">替换背景图片 replace img </button>
     <br />
     <div class="container"></div>
     <div class="container2"></div>
