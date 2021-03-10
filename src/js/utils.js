@@ -104,9 +104,9 @@ export function getBase64Data(canvas, bgImg, type) {
 export function windowToCanvas(canvas, canvas_styles, x, y) {
   const cbox = canvas.getBoundingClientRect();
   return {
-      x: (x - cbox.left - parseInt(canvas_styles.paddingLeft) - parseInt(canvas_styles.borderLeft))
+      x: (x - cbox.left - parseInt(canvas_styles.paddingLeft) - parseInt(canvas_styles.borderLeftWidth))
           * (canvas.width / parseInt(canvas_styles.width)),
-      y: (y - cbox.top - parseInt(canvas_styles.paddingTop) - parseInt(canvas_styles.borderTop))
+      y: (y - cbox.top - parseInt(canvas_styles.paddingTop) - parseInt(canvas_styles.borderTopWidth))
           * (canvas.height / parseInt(canvas_styles.height))
   };
 }
