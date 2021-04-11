@@ -39,13 +39,14 @@ class Draw {
     this.arrowPoints = [];
     this.isDrawing = false;
     this.image = new Image();
-    // this.bgImg = bgImg;
     this.textareaEl = null;
     this.measureEl = null;
     // cache
     this.historyImage = new Image(); // 撤销时用到
-    this.historyUrls = []; // 存放每一步的base64 url（只取最新的十条）
-    this.currentHistoryIndex = -1; // 当前历史记录的索引
+    this.undoQueue = []; // 撤回队列
+    this.redoQueue = []; // 重做队列
+    this.firstDraw = null
+
     this.init();
   }
 
@@ -76,6 +77,7 @@ class Draw {
   mouseDown(event) {
     this.isDrawing = true;
     this.image.src = this.canvas.toDataURL("image/png");
+    this.redoQueue.length = 0
     const { clientX, clientY } = event;
     // 鼠标按下时, canvas的初始坐标 (会随着move而变)
     const { x, y } = windowToCanvas(this.canvas, this.canvas_style, clientX, clientY);
@@ -152,12 +154,12 @@ class Draw {
 
   addHistory() {
     let data = this.canvas.toDataURL("image/png");
-    this.historyUrls.push(data);
-    let len = this.historyUrls.length;
-    if (len > 10) {
-      this.historyUrls = this.historyUrls.slice(-10, len);
+    this.undoQueue.push(data);
+    let _len = this.undoQueue.length
+    if (_len > 10) {
+      this.firstDraw = this.undoQueue[0]
+      this.undoQueue = this.undoQueue.slice(-10, _len)
     }
-    this.currentHistoryIndex = this.historyUrls.length - 1;
   }
 
   setBackground() {
@@ -329,9 +331,9 @@ class Draw {
   }
 
   resetBgImg() {
-    this.historyUrls = [];
-    this.currentHistoryIndex = -1;
-    this.clear();
+    this.redoQueue.length = 0;
+    this.undoQueue.length = 0;
+    this.clear(false);
     this.setBackground();
   }
 
@@ -339,7 +341,7 @@ class Draw {
   // Change the default setting
   config(type, value) {
     this.configuration[type] = value;
-    type === "canvasBgColor"  && this.clear();
+    type === "canvasBgColor"  && this.clear(false);
     type === 'bgImg' && this.resetBgImg();
     (type === "textFontSize" ||
       type === "textColor" ||
@@ -359,22 +361,32 @@ class Draw {
   }
 
   undo() {
-    let currentIndex = this.currentHistoryIndex;
-    if (currentIndex < 0) {
-      this.currentHistoryIndex = -1;
-      return;
-    } else if (currentIndex === 0) {
-      // 画了一笔, 要还原回去
-      this.clear();
-      this.historyUrls = [];
-      this.currentHistoryIndex = -1;
-      return;
-    }
-    this.currentHistoryIndex -= 1;
-    this.historyImage.src = this.historyUrls[this.currentHistoryIndex];
-    this.historyUrls.pop();
+    let len = this.undoQueue.length
+    if (len === 0) {return}
+    else if (len === 1) { // 初始那笔
+      if (this.firstDraw) {
+        this.historyImage.src = this.firstDraw
+      } else {
+        this.redoQueue.push(this.undoQueue.pop())
+        this.clear(false)
+        return
+      }
+    } else {
+      this.historyImage.src = this.undoQueue[len - 2]; // 注意. 减1的话是最新那一步,等于重画, 这里要减2才是我们需要的
+    } 
     this.historyImage.onload = () => {
-      this.clear();
+      this.clear(false);
+      this.context.drawImage(this.historyImage, 0, 0);
+      this.redoQueue.push(this.undoQueue.pop())
+    };
+  }
+
+  redo() {
+    if (this.redoQueue.length === 0) return
+    this.undoQueue.push(this.redoQueue.pop())
+    this.historyImage.src = this.undoQueue[this.undoQueue.length - 1];
+    this.historyImage.onload = () => {
+      this.clear(false);
       this.context.drawImage(this.historyImage, 0, 0);
     };
   }
@@ -406,13 +418,17 @@ class Draw {
     aEl.click();
   }
 
-  clear() {
+  clear(record = true) {
     this.context.fillStyle = this.configuration.canvasBgColor;
     this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
     if (this.configuration.bgImg) {
       this.context.globalCompositeOperation = "destination-out";
       this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
       this.context.globalCompositeOperation = "source-over";
+    }
+    if (this.undoQueue.length && record) {
+      let data = this.canvas.toDataURL("image/png");
+      this.undoQueue.push(data)
     }
   }
 }

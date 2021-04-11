@@ -91,6 +91,7 @@
       <button class="btn" id="generateBase64">export base64 data</button>
       <button class="btn" id="saveImg">save</button>
       <button class="btn" id="undo">撤销 undo</button>
+      <button class="btn" id="redo">重做 redo</button>
     </div>
     <button class="btn" id="reBgImg">替换背景图片 replace img </button>
     <br />
@@ -107,32 +108,32 @@
         if (e.target.nodeName !== 'BUTTON') return
         let mode = e.target.id
         if (mode === 'clear') {
-          draw.clear()
-          draw2.clear()
+          draw && draw.clear()
+          draw2 && draw2.clear()
         } else {
-          draw.setMode(mode)
-          draw2.setMode(mode)
+          draw && draw.setMode(mode)
+          draw2 && draw2.setMode(mode)
         }
       }, false)
       operations2.addEventListener('click', function(e) {
         if (e.target.nodeName !== 'BUTTON') return
         let event = e.target.id
         if (event === 'generateBase64') {
-          draw.generateBase64().then(res => {
+          draw && draw.generateBase64().then(res => {
             console.log('data1::', res)
           })
-          draw2.generateBase64().then(res => {
+          draw2 && draw2.generateBase64().then(res => {
             console.log('data2::', res)
           })
           alert('已输出至于 控制台')
         } else {
-          draw[event]()
-          draw2[event]()
+          draw && draw[event]()
+          draw2 && draw2[event]()
         }
       }, false)
       const reBgImgBtn = document.getElementById('reBgImg')
       reBgImgBtn.addEventListener('click', function() {
-        draw.config('bgImg', 'https://user-images.githubusercontent.com/24623866/110678837-b2c14e80-8211-11eb-9331-0f16e1021f28.jpg')
+        draw && draw.config('bgImg', 'https://user-images.githubusercontent.com/24623866/110678837-b2c14e80-8211-11eb-9331-0f16e1021f28.jpg')
       }, false)
       const inputEls = document.getElementsByTagName('input');
       Array.prototype.slice.call(inputEls).forEach(ele => {
@@ -162,9 +163,10 @@
         bgImg: 'https://user-images.githubusercontent.com/24623866/110678851-b5bc3f00-8211-11eb-8009-48202feb19aa.jpg'
       };
       draw = new EasyDrawingBoard(options);
-      window.draw = draw;
+      window.draw = draw
       const container2 = document.getElementsByClassName('container2')[0];
       draw2 = new EasyDrawingBoard({container: container2});
+      window.draw2 = draw2
     };
   </script>
   

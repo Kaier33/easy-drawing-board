@@ -70,6 +70,7 @@ const draw = new EasyDrawingBoard(options);
 | saveImg( [options] )  | default value { tpye: 'png', fileName: 'canvas_imgae' }  | Save the canvas as an image, and download.    |
 | generateBase64([type])| default value "png"                                      | Generate Base64 data                          |
 | undo()                | /                                                        | undo operation                                |
+| redo()                | /                                                        | redo operation                                |
 | clear()               | /                                                        | Clear canvas                                  |
 
 #### example
