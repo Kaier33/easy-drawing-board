@@ -13,29 +13,31 @@ class Draw {
       textFontSize = 16,
       textLineHeight = 20,
       textColor = "#f00",
-      textareaPlaceholder = detectLanguage()
+      textareaPlaceholder = detectLanguage(),
+      ratio = window.devicePixelRatio || 1
     } = options;
     if (!container) throw Error("No container element were found...");
+    this.configuration = {
+      bgImg,
+      ratio,
+      lineColor,
+      lineWidth: lineWidth * ratio,
+      arrowSize: arrowSize * ratio,
+      eraserSize: eraserSize * ratio,
+      textFontSize: textFontSize * ratio,
+      textLineHeight: textLineHeight * ratio,
+      textColor,
+      canvasBgColor,
+      textareaPlaceholder,
+    };
     this.container = container;
-    this.canvas = this.createCanvasEl(container);
+    this.canvas = this.createCanvasEl(container, this);
     this.context = this.canvas.getContext("2d");
     this.mode = "pencil";
     this.canvasWidth = this.canvas.width;
     this.canvasHeight = this.canvas.height;
     this.originX = null;
     this.originY = null;
-    this.configuration = {
-      lineColor,
-      lineWidth,
-      arrowSize,
-      eraserSize,
-      canvasBgColor,
-      textFontSize,
-      textLineHeight,
-      textColor,
-      bgImg,
-      textareaPlaceholder
-    };
     this.arrowPoints = [];
     this.isDrawing = false;
     this.image = new Image();
@@ -50,13 +52,13 @@ class Draw {
     this.init();
   }
 
-  createCanvasEl(container) {
+  createCanvasEl(container, context) {
     const canvasEl = Dom.createEl("canvas", {
       styles: {
         height: `${container.clientHeight}px`,
         width: `${container.clientWidth}px`,
       },
-      attrs: { width: container.clientWidth, height: container.clientHeight },
+      attrs: { width: container.clientWidth * context.configuration.ratio, height: container.clientHeight * context.configuration.ratio },
     });
     Dom.appendChild(container, canvasEl);
     return canvasEl;
@@ -95,8 +97,7 @@ class Draw {
     this.context.beginPath();
 
     this.mode === "arrow" && this.saveArrowPoint({ x: this.originX, y: this.originY });
-    this.mode === "text" &&
-    this.createTextArea({ x: this.ft_originX, y: this.ft_originY });
+    this.mode === "text" && this.createTextArea({ x: this.ft_originX, y: this.ft_originY });
   }
 
   mouseMove(event) {
@@ -156,9 +157,9 @@ class Draw {
     let data = this.canvas.toDataURL("image/png");
     this.undoQueue.push(data);
     let _len = this.undoQueue.length
-    if (_len > 10) {
+    if (_len > 20) {
       this.firstDraw = this.undoQueue[0]
-      this.undoQueue = this.undoQueue.slice(-10, _len)
+      this.undoQueue = this.undoQueue.slice(-20, _len)
     }
   }
 
@@ -226,9 +227,7 @@ class Draw {
       },
       eraser: (mousePosition) => {
         const { x, y } = mousePosition;
-        this.configuration.bgImg
-          ? (this.context.globalCompositeOperation = "destination-out")
-          : null;
+        this.configuration.bgImg ? (this.context.globalCompositeOperation = "destination-out") : null;
         this.context.strokeStyle = this.configuration.canvasBgColor;
         this.context.fillStyle = this.configuration.canvasBgColor;
         this.context.lineWidth = this.configuration.eraserSize;
@@ -268,8 +267,8 @@ class Draw {
     let string = options.text;
     ctx.save();
     ctx.textBaseline = "middle";
-    ctx.font = `${this.configuration.textFontSize}px/${this.configuration.textLineHeight}px ${options.font}`;
-    ctx.fillStyle = this.configuration.textColor;
+    ctx.font = `${options.textFontSize}px/${options.textLineHeight}px ${options.font}`;
+    ctx.fillStyle = options.textColor;
     ctx.globalCompositeOperation = "source-over";
     string
       .replace(/<br>/g, "\n")
@@ -278,10 +277,7 @@ class Draw {
         ctx.fillText(
           value,
           options.position.x + 2,
-          options.position.y +
-            index * this.configuration.textLineHeight +
-            this.configuration.textLineHeight / 2 +
-            2
+          options.position.y + index * options.textLineHeight + options.textLineHeight / 2 + 2
         );
       });
     ctx.restore();
@@ -292,19 +288,21 @@ class Draw {
     if (this.boxDom) Dom.removeChild(this.container, this.boxDom);
     this.boxDom = Dom.createEl("div", {
       styles: {
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        lineHeight: `${this.configuration.textLineHeight}px`,
-        fontSize: `${this.configuration.textFontSize}px`,
+        left: `${position.x / this.configuration.ratio}px`,
+        top: `${position.y / this.configuration.ratio}px`,
+        lineHeight: `${this.configuration.textLineHeight / this.configuration.ratio}px`,
+        fontSize: `${this.configuration.textFontSize / this.configuration.ratio}px`,
       },
     });
     Dom.addClass(this.boxDom, "__edb-textarea-box");
 
     this.textareaEl = Dom.createEl("textarea", {
       styles: {
-        lineHeight: `${this.configuration.textLineHeight}px`,
         color: this.configuration.textColor,
-        fontSize: `${this.configuration.textFontSize}px`,
+        lineHeight: `${this.configuration.textLineHeight / this.configuration.ratio}px`,
+        fontSize: `${this.configuration.textFontSize / this.configuration.ratio}px`,
+        left: `${position.x / this.configuration.ratio}px`,
+        top: `${position.y / this.configuration.ratio}px`,
       },
       props: { placeholder: this.configuration.textareaPlaceholder, autofocus: true },
     });
@@ -318,6 +316,9 @@ class Draw {
       Dom.delAttr(this.textareaEl, "autofocus");
       this.drawText(this.context, {
         text: this.textareaEl.value,
+        textColor: this.configuration.textColor,
+        textFontSize: this.configuration.textFontSize,
+        textLineHeight: this.configuration.textLineHeight,
         position,
       });
       Dom.removeChild(this.container, this.boxDom);
@@ -325,8 +326,8 @@ class Draw {
     };
     this.textareaEl.addEventListener("input", (e) => {
       this.measureEl.innerHTML = e.target.value + " ";
-      this.textareaEl.style.width = this.measureEl.clientWidth + "px";
-      this.textareaEl.style.height = this.measureEl.clientHeight + "px";
+      this.textareaEl.style.width = this.measureEl.clientWidth / this.configuration.ratio + "px";
+      this.textareaEl.style.height = this.measureEl.clientHeight / this.configuration.ratio + "px";
     });
   }
 
@@ -341,12 +342,19 @@ class Draw {
   // Change the default setting
   config(type, value) {
     this.configuration[type] = value;
-    type === "canvasBgColor"  && this.clear(false);
-    type === 'bgImg' && this.resetBgImg();
-    (type === "textFontSize" ||
-      type === "textColor" ||
-      type === "textLineHeight") &&
-      this.createTextMeasure();
+    switch (type) {
+      case 'canvasBgColor':
+        this.clear(false);
+        break
+      case 'bgImg':
+        this.resetBgImg();
+        break
+      case 'textFontSize':
+      case 'textColor':
+      case 'textLineHeight':
+        this.createTextMeasure();
+        break  
+    }
   }
 
   setMode(mode) {
@@ -434,7 +442,3 @@ class Draw {
 }
 
 export default Draw;
-
-// todo:
-// 事件抽象.
-// ts重构.

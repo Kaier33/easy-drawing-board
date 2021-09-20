@@ -1,6 +1,8 @@
 # easy-drawing-board
 
 a easy to use drawing board lib 🎨
+ + 0 dependencies
+ + Modern browser compatibility
 
 ## Installing
 Using npm:
@@ -59,13 +61,14 @@ const draw = new EasyDrawingBoard(options);
 | textFontSize   | String / Number    |  16           | Font size of the textArea                     |
 | textLineHeight | String / Number    |  20           | Font lineheight of the textArea               |
 | textColor      | String             |  #f00         | Font color of the textArea                    |
-| textareaPlaceholder | String             |  Type here...         | Textarea's placeholder                    |
+| textareaPlaceholder | String        |  Type here...            | Textarea's placeholder             |
+| ratio          | Nubmer             |  window.devicePixelRatio | Affects the quality of the picture |
 
 ### APIs
 
 | Method                | Arguments                                                | Description          |
 | :-: | :- | :- |
-| config( type,val )    | tpye's enum(lineColor, lineWidth, arrowSize, eraserSize, canvasBgColor, textFontSize, textLineHeight, textColor, bgImg, textareaPlaceholder)     | Modifying the default configuration |
+| config( type,val )    | tpye's enum(lineColor, lineWidth, arrowSize, eraserSize, canvasBgColor, textFontSize, textLineHeight, textColor, bgImg, textareaPlaceholder, ratio)     | Modifying the default configuration |
 | setMode( mode )       | mode's enum(pencil, straightLine, rect, circle, arrow, eraser)   | Set current mode                              |
 | saveImg( [options] )  | default value { tpye: 'png', fileName: 'canvas_imgae' }  | Save the canvas as an image, and download.    |
 | generateBase64([type])| default value "png"                                      | Generate Base64 data                          |
