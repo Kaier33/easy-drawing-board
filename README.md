@@ -93,12 +93,5 @@ const draw = new EasyDrawingBoard(options);
   draw.saveImg({tpye: 'jpeg', fileName: 'small.jpeg'})        // Sometimes we just need smaller pictures.
 ```
 
-
-## Todo
-
-- [x] eraser
-- [x] undo
-- [ ] typescript refactoring
-
 ## License
 [MIT](https://opensource.org/licenses/MIT)  
