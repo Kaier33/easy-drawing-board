@@ -44,7 +44,11 @@ git clone this repository then open `example/index.html` in your browser
 const options = {
   container: document.getElementsByClassName('container')[0]
 }
-// canvas's width/height equals container's width/height
+/*
+  A canvas has 2 sizes, the dimension of the pixels in the canvas and the display size. 
+  canvas's dimension of the pixels is (devicePixelRatio * canvas's display size) by default.
+  canvas's display size equals container's width/height
+*/  
 const draw = new EasyDrawingBoard(options); 
 ```
 
