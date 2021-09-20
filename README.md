@@ -80,7 +80,38 @@ const draw = new EasyDrawingBoard(options);
 | redo()                | /                                                        | redo operation                                |
 | clear()               | /                                                        | Clear canvas                                  |
 
-#### example
+### Listeners
+``coords`` it will return ``canvas's coords (x, y)`` and ``mouse's coords (clientX, clientY)``
+##### drawBegin
+```js
+  const draw = new EasyDrawingBoard({container: container})
+  draw.evt.on('drawBegin', function(coords) {
+    console.log('begin', coords);  
+  })
+```
+##### drawing
+```js
+  draw.evt.on('drawing', function(coords) {
+    console.log('drawing', coords);  
+  })
+```
+##### drawEnd
+```js
+  draw.evt.on('drawEnd', function(coords) {
+    console.log('end', coords);
+  })
+```
+
+#### removeListeners
+```js
+  draw.evt.off('drawBegin');
+  draw.evt.off('drawing');
+  draw.evt.off('drawEnd');
+  // or
+  draw.evt.removeAllListeners();
+```
+
+#### Example
 
 ```JavaScript
   // init

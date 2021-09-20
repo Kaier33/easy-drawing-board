@@ -1,6 +1,6 @@
 {
   "name": "easy-drawing-board",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "a easy to use canvas-drawing lib 🎨",
   "main": "./dist/easy-drawing-board.js",
   "scripts": {

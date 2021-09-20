@@ -24,6 +24,11 @@
         border-radius: 10px;
         background-color: skyblue;
       }
+      .box {
+        display: flex;
+        align-items: center;
+        font-size: 10;
+      }
       .container,.container2{
         display: inline-block;
         position: relative;
@@ -32,13 +37,9 @@
         border: 5px solid #eee;
         width: 500px;
         height: 500px;
-        /* width: 900px; */
-        /* height: 1200px; */
-        /* border-top: 20px solid #eee; */
-        /* margin-top: 20px; */
-        /* padding-top: 20px; */
       }
       .container2 {
+        margin-left: 20px;
         z-index: 200;
       }
       .eraserSize,
@@ -95,8 +96,16 @@
     </div>
     <button class="btn" id="reBgImg">替换背景图片 replace img </button>
     <br />
-    <div class="container"></div>
-    <div class="container2"></div>
+    <div class="box">
+      <div class="box-item">
+        <p>canvas_x: <i>0</i>, canvas_y: <i>0</i>, mouse_x: <i>0</i>, mouse_y: <i>0</i></p>
+        <div class="container"></div>
+      </div>
+      <div class="box-item">
+        <p style="margin-left: 20px;">canvas_x: <i>0</i>, canvas_y: <i>0</i>, mouse_x: <i>0</i>, mouse_y: <i>0</i></p>
+        <div class="container2"></div>
+      </div>      
+    </div>
   </body>
   <script>
     window.onload = function () {
@@ -166,7 +175,29 @@
       window.draw = draw
       const container2 = document.getElementsByClassName('container2')[0];
       draw2 = new EasyDrawingBoard({container: container2});
-      window.draw2 = draw2
+      window.draw2 = draw2;
+      
+      const coords1 = document.getElementsByClassName('box-item')[0].children[0].children;
+      const coords2 = document.getElementsByClassName('box-item')[1].children[0].children;
+      draw.evt.on('drawing', function(coords) {
+        coords1[0].innerText = coords.x
+        coords1[1].innerText = coords.y
+        coords1[2].innerText = coords.clientX
+        coords1[3].innerText = coords.clientY
+      })
+      
+      draw2.evt.on('drawBegin', function(coords) {
+        console.log('begin2', coords);
+      })
+      draw2.evt.on('drawing', function(coords) {
+        coords2[0].innerText = coords.x
+        coords2[1].innerText = coords.y
+        coords2[2].innerText = coords.clientX
+        coords2[3].innerText = coords.clientY
+      })
+      draw2.evt.on('drawEnd', function(coords) {
+        console.log('end2', coords);
+      })
     };
   </script>
   

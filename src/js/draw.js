@@ -1,5 +1,6 @@
 import { drawArrow, getBase64Data, windowToCanvas, detectLanguage } from "./utils";
 import Dom from "./dom";
+import Eve from './event_emitter';
 class Draw {
   constructor(options) {
     const {
@@ -47,7 +48,9 @@ class Draw {
     this.historyImage = new Image(); // 撤销时用到
     this.undoQueue = []; // 撤回队列
     this.redoQueue = []; // 重做队列
-    this.firstDraw = null
+    this.firstDraw = null;
+    // event emitter
+    this.evt = new Eve();
 
     this.init();
   }
@@ -72,8 +75,8 @@ class Draw {
     this.createTextMeasure();
     this.canvas.addEventListener("mousedown", this.mouseDown.bind(this));
     this.canvas.addEventListener("mousemove", this.mouseMove.bind(this));
-    this.canvas.addEventListener("mouseup", () => this.endOfDrawing());
-    this.canvas.addEventListener("mouseleave", () => this.endOfDrawing());
+    this.canvas.addEventListener("mouseup", this.endOfDrawing.bind(this));
+    this.canvas.addEventListener("mouseleave", this.endOfDrawing.bind(this));
   }
 
   mouseDown(event) {
@@ -98,6 +101,10 @@ class Draw {
 
     this.mode === "arrow" && this.saveArrowPoint({ x: this.originX, y: this.originY });
     this.mode === "text" && this.createTextArea({ x: this.ft_originX, y: this.ft_originY });
+    
+    if (this.mode && this.mode !== 'text') {
+      this.evt.trigger('drawBegin', { x, y, clientX, clientY });
+    }
   }
 
   mouseMove(event) {
@@ -135,6 +142,10 @@ class Draw {
       let mousemoveEvent = this.handleMousemove();
       let currMousemoveEvent = mousemoveEvent[this.mode];
       currMousemoveEvent && currMousemoveEvent(mousePosition);
+
+      if (this.mode && this.mode !== 'text') {
+        this.evt.trigger('drawing', { x, y, clientX, clientY });
+      }
     }
   }
 
@@ -145,21 +156,28 @@ class Draw {
     this.context.beginPath();
   }
 
-  endOfDrawing() {
+  endOfDrawing(event) {
     if (this.isDrawing) {
+      const { clientX, clientY } = event;
+      const { x, y } = windowToCanvas(this.canvas, this.canvas_style, clientX, clientY);
+
       this.context.closePath();
       this.isDrawing = false;
       this.addHistory();
+      
+      if (this.mode && this.mode !== 'text') {
+        this.evt.trigger('drawEnd', { x, y, clientX, clientY });
+      }
     }
   }
 
   addHistory() {
     let data = this.canvas.toDataURL("image/png");
     this.undoQueue.push(data);
-    let _len = this.undoQueue.length
+    let _len = this.undoQueue.length;
     if (_len > 20) {
-      this.firstDraw = this.undoQueue[0]
-      this.undoQueue = this.undoQueue.slice(-20, _len)
+      this.firstDraw = this.undoQueue[0];
+      this.undoQueue = this.undoQueue.slice(-20, _len);
     }
   }
 
@@ -322,7 +340,7 @@ class Draw {
         position,
       });
       Dom.removeChild(this.container, this.boxDom);
-      this.boxDom = null
+      this.boxDom = null;
     };
     this.textareaEl.addEventListener("input", (e) => {
       this.measureEl.innerHTML = e.target.value + " ";
