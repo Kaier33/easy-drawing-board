@@ -81,7 +81,7 @@ const draw = new EasyDrawingBoard(options);
 | clear()               | /                                                        | Clear canvas                                  |
 
 ### Listeners
-``coords`` it will return ``canvas's coords (x, y)`` and ``mouse's coords (clientX, clientY)``
+``coords`` it will return ``canvas's coords (x, y)`` and ``Mouse's coords (clientX, clientY)``
 ##### drawBegin
 ```js
   const draw = new EasyDrawingBoard({container: container})
