@@ -40,14 +40,14 @@ git clone this repository then open `example/index.html` in your browser
 ```
 
 ```javascript
-// See below for document.
+// More options are available in the following documents
 const options = {
   container: document.getElementsByClassName('container')[0]
 }
 /*
   A canvas has 2 sizes, the dimension of the pixels in the canvas and the display size. 
   canvas's dimension of the pixels is (devicePixelRatio * canvas's display size) by default.
-  canvas's display size equals container's width/height
+  canvas's display size equals container's size (width/height)
 */  
 const draw = new EasyDrawingBoard(options); 
 ```
@@ -73,18 +73,19 @@ const draw = new EasyDrawingBoard(options);
 | Method                | Arguments                                                | Description          |
 | :-: | :- | :- |
 | config( type,val )    | tpye's enum(lineColor, lineWidth, arrowSize, eraserSize, canvasBgColor, textFontSize, textLineHeight, textColor, bgImg, textareaPlaceholder, ratio)     | Modifying the default configuration |
-| setMode( mode )       | mode's enum(pencil, straightLine, rect, circle, arrow, eraser)   | Set current mode                              |
+| setMode( mode )       | mode's enum(pencil, straightLine, rect, circle, arrow, text, eraser)   | Set current mode                              |
 | saveImg( [options] )  | default value { tpye: 'png', fileName: 'canvas_imgae' }  | Save the canvas as an image, and download.    |
 | generateBase64([type])| default value "png"                                      | Generate Base64 data                          |
-| undo()                | /                                                        | undo operation                                |
-| redo()                | /                                                        | redo operation                                |
+| undo()                | /                                                        | Undo operation                                |
+| redo()                | /                                                        | Redo operation                                |
 | clear()               | /                                                        | Clear canvas                                  |
 
 ### Listeners
 ``coords`` it will return ``canvas's coords (x, y)`` and ``Mouse's coords (clientX, clientY)``
 ##### drawBegin
 ```js
-  const draw = new EasyDrawingBoard({container: container})
+  import EasyDrawingBoard from 'easy-drawing-board'
+  const draw = new EasyDrawingBoard({container: Dom})
   draw.evt.on('drawBegin', function(coords) {
     console.log('begin', coords);  
   })

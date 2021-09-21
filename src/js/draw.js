@@ -31,8 +31,8 @@ class Draw {
       canvasBgColor,
       textareaPlaceholder,
     };
-    this.container = container;
-    this.canvas = this.createCanvasEl(container, this);
+    this.container = this.createCanvasOuterBox(container);
+    this.canvas = this.createCanvasEl(this.container, this);
     this.context = this.canvas.getContext("2d");
     this.mode = "pencil";
     this.canvasWidth = this.canvas.width;
@@ -53,6 +53,19 @@ class Draw {
     this.evt = new Eve();
 
     this.init();
+  }
+
+  createCanvasOuterBox(container) {
+    const canvasOuterBoxDom = Dom.createEl('div', {
+      styles: {
+        height: `${container.clientHeight}px`,
+        width: `${container.clientWidth}px`,
+        position: 'relative',
+        top: '0'
+      }
+    })
+    Dom.appendChild(container, canvasOuterBoxDom)
+    return canvasOuterBoxDom
   }
 
   createCanvasEl(container, context) {
@@ -306,6 +319,7 @@ class Draw {
     if (this.boxDom) Dom.removeChild(this.container, this.boxDom);
     this.boxDom = Dom.createEl("div", {
       styles: {
+        position: 'absolute',
         left: `${position.x / this.configuration.ratio}px`,
         top: `${position.y / this.configuration.ratio}px`,
         lineHeight: `${this.configuration.textLineHeight / this.configuration.ratio}px`,
@@ -319,34 +333,34 @@ class Draw {
         color: this.configuration.textColor,
         lineHeight: `${this.configuration.textLineHeight / this.configuration.ratio}px`,
         fontSize: `${this.configuration.textFontSize / this.configuration.ratio}px`,
-        left: `${position.x / this.configuration.ratio}px`,
-        top: `${position.y / this.configuration.ratio}px`,
       },
       props: { placeholder: this.configuration.textareaPlaceholder, autofocus: true },
     });
     Dom.addClass(this.textareaEl, "__edb-textarea");
-
     Dom.appendChild(this.boxDom, this.textareaEl);
     Dom.appendChild(this.container, this.boxDom);
-
-    this.textareaEl.onblur = () => {
-      this.mode = null;
-      Dom.delAttr(this.textareaEl, "autofocus");
-      this.drawText(this.context, {
-        text: this.textareaEl.value,
-        textColor: this.configuration.textColor,
-        textFontSize: this.configuration.textFontSize,
-        textLineHeight: this.configuration.textLineHeight,
-        position,
+    // 如果没有进任务队列的话, mac Safari下会直接触发onblur导致整个dom消失
+    setTimeout(() => {
+      this.textareaEl.onblur = () => {
+        this.mode = null;
+        Dom.delAttr(this.textareaEl, "autofocus");
+        this.drawText(this.context, {
+          text: this.textareaEl.value,
+          textColor: this.configuration.textColor,
+          textFontSize: this.configuration.textFontSize,
+          textLineHeight: this.configuration.textLineHeight,
+          position,
+        });
+        Dom.removeChild(this.container, this.boxDom);
+        this.boxDom = null;
+        this.textareaEl = null;
+      };
+      this.textareaEl.addEventListener("input", (e) => {
+        this.measureEl.innerHTML = e.target.value + " ";
+        this.textareaEl.style.width = this.measureEl.clientWidth / this.configuration.ratio + "px";
+        this.textareaEl.style.height = this.measureEl.clientHeight / this.configuration.ratio + "px";
       });
-      Dom.removeChild(this.container, this.boxDom);
-      this.boxDom = null;
-    };
-    this.textareaEl.addEventListener("input", (e) => {
-      this.measureEl.innerHTML = e.target.value + " ";
-      this.textareaEl.style.width = this.measureEl.clientWidth / this.configuration.ratio + "px";
-      this.textareaEl.style.height = this.measureEl.clientHeight / this.configuration.ratio + "px";
-    });
+    }, 50)
   }
 
   resetBgImg() {
