@@ -373,7 +373,11 @@ class Draw {
   // api
   // Change the default setting
   config(type, value) {
-    this.configuration[type] = value;
+    if (['lineWidth', 'arrowSize', 'eraserSize', 'textFontSize', 'textLineHeight'].includes(type)) {
+      this.configuration[type] = value * this.configuration.ratio;
+    } else {
+      this.configuration[type] = value;
+    }
     switch (type) {
       case 'canvasBgColor':
         this.clear(false);
