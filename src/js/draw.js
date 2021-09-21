@@ -334,16 +334,16 @@ class Draw {
         lineHeight: `${this.configuration.textLineHeight / this.configuration.ratio}px`,
         fontSize: `${this.configuration.textFontSize / this.configuration.ratio}px`,
       },
-      props: { placeholder: this.configuration.textareaPlaceholder, autofocus: true },
+      props: { placeholder: this.configuration.textareaPlaceholder },
     });
     Dom.addClass(this.textareaEl, "__edb-textarea");
     Dom.appendChild(this.boxDom, this.textareaEl);
     Dom.appendChild(this.container, this.boxDom);
     // 如果没有进任务队列的话, mac Safari下会直接触发onblur导致整个dom消失
     setTimeout(() => {
+      this.textareaEl.focus();
       this.textareaEl.onblur = () => {
         this.mode = null;
-        Dom.delAttr(this.textareaEl, "autofocus");
         this.drawText(this.context, {
           text: this.textareaEl.value,
           textColor: this.configuration.textColor,
