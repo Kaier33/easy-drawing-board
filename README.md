@@ -15,7 +15,7 @@ yarn add easy-drawing-board
 ```
 Using script tag
 ```html
-<script src="your_path/dist/easy-drawing-board.js"></script>
+<script src="your_path/dist/easy-drawing-board.min.js"></script>
 ```
 
 ## Play
