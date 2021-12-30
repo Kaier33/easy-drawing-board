@@ -34,7 +34,7 @@ git clone this repository then open `example/index.html` in your browser
 ### Initialize
 
 ```html
-<script type="text/javascript" src="//{you path to the dist file}/dist/easy-drawing-board.js"></script>
+<script type="text/javascript" src="//{you path to the dist file}/dist/easy-drawing-board.min.js"></script>
 <style>.container { width: 500px; height: 500px; }</style>
 <div class="container"></div>
 ```
